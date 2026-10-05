@@ -35,3 +35,18 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--color-borda) transparent;
 }
+
+/* Impressão (orçamento): papel A4 branco, cores preservadas */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  body {
+    background: #fff;
+    color: #0f172a;
+    color-scheme: light;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

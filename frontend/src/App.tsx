@@ -12,6 +12,7 @@ import { EditarVenda, NovaVenda } from '@/pages/vendas/FormularioVenda';
 import { Orcamentos } from '@/pages/vendas/Orcamentos';
 import { DetalheOrcamento } from '@/pages/vendas/DetalheOrcamento';
 import { EditarOrcamento, NovoOrcamento } from '@/pages/vendas/FormularioOrcamento';
+import { ImprimirOrcamento } from '@/pages/vendas/ImprimirOrcamento';
 import { Estoque } from '@/pages/gestao/Estoque';
 import { Financeiro } from '@/pages/gestao/Financeiro';
 import { Relatorios } from '@/pages/gestao/Relatorios';
@@ -20,6 +21,8 @@ import { Configuracoes } from '@/pages/gestao/Configuracoes';
 export function App() {
   return (
     <Routes>
+      {/* páginas de impressão ficam fora do layout (sem menu) */}
+      <Route path="orcamentos/:id/imprimir" element={<ImprimirOrcamento />} />
       <Route element={<AppLayout />}>
         <Route index element={<Dashboard />} />
 

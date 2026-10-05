@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Check, Copy, MessageCircle, Pencil, RotateCcw, ShoppingCart, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, MessageCircle, Pencil, Printer, RotateCcw, ShoppingCart, ThumbsDown, ThumbsUp, Trash2 } from 'lucide-react';
 import { api, type Empresa, type FormaPagamento, type Orcamento, type Venda } from '@/lib/api';
 import { formatarDataHora } from '@/lib/formato';
 import { copiarTexto } from '@/lib/copiar';
@@ -151,6 +151,11 @@ export function DetalheOrcamento() {
           </Card>
         )}
         <div className="flex flex-wrap gap-2">
+          <Link to={`/orcamentos/${o.id}/imprimir?imprimir=1`}>
+            <Botao variante="secundario" icone={<Printer className="size-4" />}>
+              Imprimir
+            </Botao>
+          </Link>
           {wa && (
             <a href={`${wa}?text=${encodeURIComponent(mensagem)}`} target="_blank" rel="noreferrer">
               <Botao variante="secundario" icone={<MessageCircle className="size-4 text-emerald-400" />}>

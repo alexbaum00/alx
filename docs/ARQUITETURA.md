@@ -109,6 +109,10 @@ Sessões valem 30 dias e são renovadas com o uso. O cookie não tem a flag `Sec
 - **Categorias de serviço**: lista fixa (Elétrica, Película, Som, Chave, Outros) em `Servico.categoria`, para não surgirem blocos duplicados por grafia diferente. A tela Serviços mostra um bloco por categoria, nessa ordem, com cores em `frontend/src/lib/categoriasServico.ts` (amarelo, grafite, roxo, vermelho, preto). A migração `2_categoria_servico` classifica os serviços já cadastrados por palavra-chave no nome; o resto fica em Outros.
 - **Ferramentas** (Cadastros › Ferramentas): valor por unidade × quantidade; o resumo soma o investido sem as descartadas, por categoria, e conta as em manutenção e na garantia.
 
+## Impressão do orçamento
+
+`/orcamentos/:id/imprimir` é uma página fora do layout do sistema (sem menu), sempre clara, em formato A4 (`@page` em `styles/index.css`). Ela mostra o cabeçalho com os dados da oficina (Configurações), o cliente (ou o contato sem cadastro), o veículo, os itens, os totais, as observações, a validade e as linhas de assinatura. O botão **Imprimir** do orçamento abre a página com `?imprimir=1`, que chama `window.print()` assim que os dados carregam; o título da página vira o nome sugerido ao "Salvar como PDF". O cabeçalho da tabela se repete em cada página, e os totais e as assinaturas não são quebrados entre páginas.
+
 ## Busca sem acento
 
 O `LIKE` do SQLite só ignora maiúsculas/minúsculas em letras sem acento. Por isso, 10 tabelas (Cliente, Veiculo, Fornecedor, Produto, Servico, Procedimento, Ferramenta, Despesa, Orcamento, ItemVenda) têm a coluna `busca`, com os campos de texto em minúsculas e sem acento ("Relé 12V" → "rele 12v"). A busca normaliza o termo do mesmo jeito (`backend/src/lib/busca.ts`) e procura nessa coluna. CPF/CNPJ, telefone e placa continuam buscados direto.
