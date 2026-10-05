@@ -8,6 +8,14 @@ Detalhes técnicos e decisões: [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ---
 
+## Só para testar (Windows)
+
+1. Instale o **Node.js 22 ou mais novo** (LTS) em <https://nodejs.org>.
+2. Baixe e extraia o sistema numa pasta qualquer.
+3. Dê **duplo clique em `testar.bat`**. Ele instala, compila, cria o banco com dados de exemplo, inicia o sistema e abre o navegador. Deixe a janela aberta; `Ctrl+C` para parar.
+
+Nada fica instalado no Windows (sem início automático, atalhos ou regra de firewall). Para remover, apague a pasta.
+
 ## Instalação no Windows
 
 1. Instale o **Node.js 22 ou mais novo** (versão LTS) em <https://nodejs.org>. Se preferir, abra o PowerShell e rode `winget install OpenJS.NodeJS.LTS`.
