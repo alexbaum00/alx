@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { listQuery, parcial, textoOpcional } from './common.js';
+import { dataLocal, listQuery, parcial, textoOpcional } from './common.js';
 import { centavos, itensInput } from './itens.js';
 
 export const statusVenda = z.enum(['ABERTO', 'CONCLUIDO', 'PAGO', 'CANCELADO']);
@@ -11,7 +11,7 @@ const idOpcional = z.number().int().positive().nullish();
 export const vendaCreate = z.object({
   clienteId: idOpcional, // venda de balcão pode não ter cliente
   veiculoId: idOpcional,
-  data: z.coerce.date().optional(),
+  data: dataLocal.optional(),
   // venda de balcão já nasce PAGO; ordem de serviço começa ABERTO
   status: statusVenda.exclude(['CANCELADO']).default('ABERTO'),
   formaPagamento: formaPagamento.nullish(),
@@ -26,8 +26,8 @@ export const vendaList = listQuery.extend({
   status: statusVenda.optional(),
   clienteId: z.coerce.number().int().positive().optional(),
   veiculoId: z.coerce.number().int().positive().optional(),
-  de: z.coerce.date().optional(),
-  ate: z.coerce.date().optional(),
+  de: dataLocal.optional(),
+  ate: dataLocal.optional(),
 });
 
 export const orcamentoCreate = z.object({
@@ -36,7 +36,7 @@ export const orcamentoCreate = z.object({
   nomeContato: textoOpcional,
   telefoneContato: textoOpcional,
   descricaoVeiculo: textoOpcional,
-  validadeAte: z.coerce.date().nullish(),
+  validadeAte: dataLocal.nullish(),
   descontoCentavos: centavos.default(0),
   observacoes: textoOpcional,
   itens: itensInput,

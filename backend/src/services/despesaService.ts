@@ -2,11 +2,12 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
+import { fimDoDia } from '../lib/datas.js';
 import type { DespesaCreate, DespesaUpdate } from '../schemas/cadastros.js';
 
 export async function listar(q: { busca?: string; de?: Date; ate?: Date; pagina: number; porPagina: number }) {
   const where: Prisma.DespesaWhereInput = {
-    data: { gte: q.de, lte: q.ate },
+    data: { gte: q.de, lte: q.ate && fimDoDia(q.ate) },
     ...(q.busca && { OR: [{ descricao: { contains: q.busca } }, { categoria: { contains: q.busca } }] }),
   };
   const [itens, total, soma] = await prisma.$transaction([

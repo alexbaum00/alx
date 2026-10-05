@@ -56,6 +56,7 @@ Todos os cadastros seguem o mesmo padrão: `GET /` (com `?busca=&pagina=&porPagi
 | Vendas | `/api/vendas` | sem DELETE; `PATCH /:id/status` (concluir/pagar baixa estoque, cancelar devolve) |
 | Orçamentos | `/api/orcamentos` | `PATCH /:id/status`, `POST /:id/converter` (gera a venda) |
 | Despesas | `/api/despesas` | `?de=&ate=`; retorna `totalCentavos` do período |
-| Empresa | `GET/PUT /api/empresa` | dados da oficina |
+| Empresa | `GET/PUT /api/empresa` | dados da oficina e link do emissor de NF-e |
+| Relatórios | `GET /api/relatorios/financeiro`, `GET /api/relatorios/vendas` | `?de=AAAA-MM-DD&ate=AAAA-MM-DD` (padrão: mês atual) |
 
 Valores em dinheiro trafegam em centavos (`2500` = R$ 25,00).

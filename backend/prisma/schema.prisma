@@ -48,18 +48,20 @@ enum TipoMovimentacao {
 
 // Dados da própria oficina (linha única), usados no cabeçalho e na cópia para NF.
 model Empresa {
-  id           Int     @id @default(1)
-  nomeFantasia String  @default("ALX Auto Elétrica")
-  razaoSocial  String?
-  cnpj         String?
-  telefone     String?
-  email        String?
-  cep          String?
-  endereco     String?
-  numero       String?
-  bairro       String?
-  cidade       String?
-  uf           String?
+  id            Int     @id @default(1)
+  nomeFantasia  String  @default("ALX Auto Elétrica")
+  razaoSocial   String?
+  cnpj          String?
+  telefone      String?
+  email         String?
+  cep           String?
+  endereco      String?
+  numero        String?
+  bairro        String?
+  cidade        String?
+  uf            String?
+  // NF-e de peças varia por estado (ex.: app Nota Fiscal Fácil da SEFAZ); a oficina informa o link
+  urlEmissorNfe String?
 }
 
 model Cliente {

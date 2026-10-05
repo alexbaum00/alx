@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { listQuery, parcial, somenteDigitos, textoOpcional } from './common.js';
+import { dataLocal, listQuery, parcial, somenteDigitos, textoOpcional } from './common.js';
 import { centavos } from './itens.js';
 
 const idOpcional = z.number().int().positive().nullish();
@@ -87,11 +87,11 @@ export const despesaCreate = z.object({
   descricao: z.string().trim().min(1, 'Descrição é obrigatória'),
   categoria: textoOpcional,
   valorCentavos: centavos.refine((v) => v > 0, 'Valor deve ser maior que zero'),
-  data: z.coerce.date().optional(),
+  data: dataLocal.optional(),
   pago: z.boolean().default(true),
 });
 export const despesaUpdate = parcial(despesaCreate);
-export const despesaList = listQuery.extend({ de: z.coerce.date().optional(), ate: z.coerce.date().optional() });
+export const despesaList = listQuery.extend({ de: dataLocal.optional(), ate: dataLocal.optional() });
 
 export const empresaUpdate = z.object({
   nomeFantasia: z.string().trim().min(1).optional(),
@@ -105,6 +105,7 @@ export const empresaUpdate = z.object({
   bairro: textoOpcional,
   cidade: textoOpcional,
   uf: textoOpcional.transform((v) => v?.toUpperCase()),
+  urlEmissorNfe: textoOpcional.refine((v) => v == null || /^https?:\/\//.test(v), 'Informe um link começando com http:// ou https://'),
 });
 
 export type VeiculoCreate = z.infer<typeof veiculoCreate>;

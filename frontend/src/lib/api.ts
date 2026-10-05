@@ -84,3 +84,106 @@ export interface ProdutoResumo {
   precoVendaCentavos: number;
   estoqueBaixo: boolean;
 }
+
+export type FormaPagamento = 'PIX' | 'DINHEIRO' | 'CARTAO_DEBITO' | 'CARTAO_CREDITO' | 'BOLETO' | 'OUTRO';
+export type StatusOrcamento = 'PENDENTE' | 'APROVADO' | 'RECUSADO' | 'CONVERTIDO';
+
+export const nomesFormaPagamento: Record<FormaPagamento, string> = {
+  PIX: 'Pix',
+  DINHEIRO: 'Dinheiro',
+  CARTAO_DEBITO: 'Débito',
+  CARTAO_CREDITO: 'Crédito',
+  BOLETO: 'Boleto',
+  OUTRO: 'Outro',
+};
+
+export interface ClienteCompleto {
+  id: number;
+  nome: string;
+  cpfCnpj: string | null;
+  telefone: string | null;
+  email: string | null;
+  cep: string | null;
+  endereco: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+}
+
+export interface VeiculoCompleto {
+  id: number;
+  clienteId: number;
+  placa: string;
+  marca: string | null;
+  modelo: string;
+  ano: number | null;
+  kmAtual: number | null;
+}
+
+export interface ItemDocumento {
+  id: number;
+  tipo: 'PRODUTO' | 'SERVICO';
+  produtoId: number | null;
+  servicoId: number | null;
+  descricao: string;
+  quantidade: number;
+  valorUnitarioCentavos: number;
+  valorTotalCentavos: number;
+}
+
+interface Totais {
+  descontoCentavos: number;
+  totalProdutosCentavos: number;
+  totalServicosCentavos: number;
+  valorTotalCentavos: number;
+}
+
+export interface Venda extends Totais {
+  id: number;
+  data: string;
+  status: StatusVenda;
+  formaPagamento: FormaPagamento | null;
+  kmEntrada: number | null;
+  observacoes: string | null;
+  clienteId: number | null;
+  veiculoId: number | null;
+  cliente: ClienteCompleto | null;
+  veiculo: VeiculoCompleto | null;
+  itens: ItemDocumento[];
+  orcamento: { id: number } | null;
+  estoqueBaixado: boolean;
+}
+
+export interface Orcamento extends Totais {
+  id: number;
+  data: string;
+  status: StatusOrcamento;
+  validadeAte: string | null;
+  nomeContato: string | null;
+  telefoneContato: string | null;
+  descricaoVeiculo: string | null;
+  observacoes: string | null;
+  clienteId: number | null;
+  veiculoId: number | null;
+  cliente: ClienteCompleto | null;
+  veiculo: VeiculoCompleto | null;
+  itens: ItemDocumento[];
+  venda: { id: number; status: StatusVenda } | null;
+}
+
+export interface Empresa {
+  nomeFantasia: string;
+  razaoSocial: string | null;
+  cnpj: string | null;
+  telefone: string | null;
+  email: string | null;
+  cep: string | null;
+  endereco: string | null;
+  numero: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  urlEmissorNfe: string | null;
+}

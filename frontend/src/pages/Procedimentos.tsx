@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Pencil, Plus, Search } from 'lucide-react';
 import { api, type Pagina } from '@/lib/api';
 import { formatarPlaca } from '@/lib/formato';
 import { Card } from '@/components/ui/Card';
 import { Carregando, Erro, Vazio } from '@/components/ui/Estados';
+import { Botao } from '@/components/ui/Botao';
+import { FormularioCadastro } from '@/components/cadastro/FormularioCadastro';
+import { configProcedimentos } from './cadastros/configs';
 
 interface Procedimento {
   id: number;
@@ -19,10 +22,11 @@ interface Procedimento {
   veiculo: { id: number; placa: string; modelo: string } | null;
 }
 
-// Consulta rápida da base técnica. Cadastro e edição entram na Fase 4.
+// Consulta rápida da base técnica, com cadastro e edição.
 export function Procedimentos() {
   const [params, setParams] = useSearchParams();
   const [texto, setTexto] = useState(params.get('busca') ?? '');
+  const [formulario, setFormulario] = useState<{ item: Procedimento | null } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setParams(texto.trim() ? { busca: texto.trim() } : {}, { replace: true }), 300);
@@ -37,8 +41,15 @@ export function Procedimentos() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-2xl font-bold text-white">Procedimentos</h1>
-      <p className="mb-4 text-sm text-suave">Defeitos, diagnósticos e macetes já resolvidos.</p>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Procedimentos</h1>
+          <p className="text-sm text-suave">Defeitos, diagnósticos e macetes já resolvidos.</p>
+        </div>
+        <Botao icone={<Plus className="size-4" />} onClick={() => setFormulario({ item: null })}>
+          Novo procedimento
+        </Botao>
+      </div>
 
       <div className="relative mb-4">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-apagado" />
@@ -65,15 +76,23 @@ export function Procedimentos() {
             {data.total} resultado{data.total === 1 ? '' : 's'}
           </p>
           {data.itens.map((p) => (
-            <ItemProcedimento key={p.id} p={p} abertoInicial={data.itens.length === 1} />
+            <ItemProcedimento key={p.id} p={p} abertoInicial={data.itens.length === 1} onEditar={() => setFormulario({ item: p })} />
           ))}
         </div>
+      )}
+      {formulario && (
+        <FormularioCadastro
+          key={formulario.item?.id ?? 'novo'}
+          config={configProcedimentos}
+          item={formulario.item as unknown as Record<string, unknown> | null}
+          onFechar={() => setFormulario(null)}
+        />
       )}
     </div>
   );
 }
 
-function ItemProcedimento({ p, abertoInicial }: { p: Procedimento; abertoInicial: boolean }) {
+function ItemProcedimento({ p, abertoInicial, onEditar }: { p: Procedimento; abertoInicial: boolean; onEditar: () => void }) {
   const [aberto, setAberto] = useState(abertoInicial);
   return (
     <Card>
@@ -93,6 +112,11 @@ function ItemProcedimento({ p, abertoInicial }: { p: Procedimento; abertoInicial
           <Campo titulo="Diagnóstico" texto={p.diagnosticoEncontrado} />
           <Campo titulo="Solução aplicada" texto={p.solucaoAplicada} />
           <Campo titulo="Esquema elétrico / anotações" texto={p.esquemaEletricoAnotacoes} destaque />
+          <div className="flex justify-end">
+            <Botao variante="secundario" tamanho="sm" icone={<Pencil className="size-3.5" />} onClick={onEditar}>
+              Editar
+            </Botao>
+          </div>
           {p.tags && (
             <div className="flex flex-wrap gap-1.5">
               {p.tags.split(',').map((t) => (

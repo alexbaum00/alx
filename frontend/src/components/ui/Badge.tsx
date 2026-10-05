@@ -30,3 +30,16 @@ export function BadgeStatusVenda({ status }: { status: StatusVenda }) {
   const [cor, texto] = statusVenda[status];
   return <Badge cor={cor}>{texto}</Badge>;
 }
+
+const statusOrcamento: Record<'PENDENTE' | 'APROVADO' | 'RECUSADO' | 'CONVERTIDO', [CorBadge, string]> = {
+  PENDENTE: ['amarelo', 'Pendente'],
+  APROVADO: ['azul', 'Aprovado'],
+  RECUSADO: ['vermelho', 'Recusado'],
+  CONVERTIDO: ['verde', 'Virou venda'],
+};
+
+export function BadgeStatusOrcamento({ status, vencido }: { status: keyof typeof statusOrcamento; vencido?: boolean }) {
+  if (vencido && status === 'PENDENTE') return <Badge cor="cinza">Vencido</Badge>;
+  const [cor, texto] = statusOrcamento[status];
+  return <Badge cor={cor}>{texto}</Badge>;
+}

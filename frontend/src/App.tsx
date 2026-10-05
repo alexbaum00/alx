@@ -4,37 +4,53 @@ import { Dashboard } from '@/pages/Dashboard';
 import { Cadastros } from '@/pages/Cadastros';
 import { Procedimentos } from '@/pages/Procedimentos';
 import { EmBreve } from '@/pages/EmBreve';
-
-const provisorias: [string, string, string][] = [
-  ['vendas', 'Vendas', 'Lançamento e listagem de vendas e ordens de serviço.'],
-  ['vendas/nova', 'Nova Venda', 'Venda rápida com busca de peça e serviço.'],
-  ['orcamentos', 'Orçamentos', 'Orçamentos para quem pedir preço antes de fechar.'],
-  ['orcamentos/novo', 'Novo Orçamento', 'Monte o orçamento e converta em venda quando aprovado.'],
-  ['cadastros/clientes', 'Clientes', 'Cadastro de clientes com endereço para nota fiscal.'],
-  ['cadastros/clientes/novo', 'Cadastrar Cliente', 'Formulário de cliente.'],
-  ['cadastros/veiculos', 'Veículos', 'Veículos dos clientes e histórico de atendimentos.'],
-  ['cadastros/fornecedores', 'Fornecedores', 'Distribuidores e contatos.'],
-  ['cadastros/produtos', 'Produtos', 'Peças, preços e estoque mínimo.'],
-  ['cadastros/produtos/novo', 'Adicionar Produto', 'Formulário de produto.'],
-  ['cadastros/servicos', 'Serviços', 'Catálogo de mão de obra.'],
-  ['cadastros/servicos/novo', 'Registrar Serviço', 'Formulário de serviço.'],
-  ['estoque', 'Estoque', 'Níveis de estoque, alertas e histórico de movimentação.'],
-  ['estoque/entrada', 'Entrada no Estoque', 'Registro de mercadoria recebida.'],
-  ['financeiro', 'Financeiro', 'Entradas das vendas pagas e despesas.'],
-  ['relatorios', 'Relatórios', 'Vendas por período, produtos e serviços mais vendidos.'],
-  ['configuracoes', 'Configurações', 'Dados da oficina usados na nota e no cabeçalho.'],
-];
+import { Clientes, Fornecedores, Produtos, Servicos, Veiculos } from '@/pages/cadastros';
+import { Vendas } from '@/pages/vendas/Vendas';
+import { DetalheVenda } from '@/pages/vendas/DetalheVenda';
+import { EditarVenda, NovaVenda } from '@/pages/vendas/FormularioVenda';
+import { Orcamentos } from '@/pages/vendas/Orcamentos';
+import { DetalheOrcamento } from '@/pages/vendas/DetalheOrcamento';
+import { EditarOrcamento, NovoOrcamento } from '@/pages/vendas/FormularioOrcamento';
+import { Estoque } from '@/pages/gestao/Estoque';
+import { Financeiro } from '@/pages/gestao/Financeiro';
+import { Relatorios } from '@/pages/gestao/Relatorios';
+import { Configuracoes } from '@/pages/gestao/Configuracoes';
 
 export function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Dashboard />} />
+
+        <Route path="vendas" element={<Vendas />} />
+        <Route path="vendas/nova" element={<NovaVenda />} />
+        <Route path="vendas/:id" element={<DetalheVenda />} />
+        <Route path="vendas/:id/editar" element={<EditarVenda />} />
+
+        <Route path="orcamentos" element={<Orcamentos />} />
+        <Route path="orcamentos/novo" element={<NovoOrcamento />} />
+        <Route path="orcamentos/:id" element={<DetalheOrcamento />} />
+        <Route path="orcamentos/:id/editar" element={<EditarOrcamento />} />
+
         <Route path="cadastros" element={<Cadastros />} />
+        <Route path="cadastros/clientes" element={<Clientes />} />
+        <Route path="cadastros/clientes/novo" element={<Clientes novo />} />
+        <Route path="cadastros/veiculos" element={<Veiculos />} />
+        <Route path="cadastros/veiculos/novo" element={<Veiculos novo />} />
+        <Route path="cadastros/fornecedores" element={<Fornecedores />} />
+        <Route path="cadastros/fornecedores/novo" element={<Fornecedores novo />} />
+        <Route path="cadastros/produtos" element={<Produtos />} />
+        <Route path="cadastros/produtos/novo" element={<Produtos novo />} />
+        <Route path="cadastros/servicos" element={<Servicos />} />
+        <Route path="cadastros/servicos/novo" element={<Servicos novo />} />
+
+        <Route path="estoque" element={<Estoque />} />
+        <Route path="estoque/entrada" element={<Estoque entrada />} />
         <Route path="procedimentos" element={<Procedimentos />} />
-        {provisorias.map(([caminho, titulo, descricao]) => (
-          <Route key={caminho} path={caminho} element={<EmBreve titulo={titulo} descricao={descricao} />} />
-        ))}
+        <Route path="financeiro" element={<Financeiro />} />
+        <Route path="relatorios" element={<Relatorios />} />
+        <Route path="configuracoes" element={<Configuracoes />} />
+
         <Route path="*" element={<EmBreve titulo="Página não encontrada" descricao="Este endereço não existe." />} />
       </Route>
     </Routes>

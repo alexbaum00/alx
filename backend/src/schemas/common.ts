@@ -28,3 +28,17 @@ export function parcial<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
   );
   return z.object(shape) as unknown as ReturnType<z.ZodObject<T>['partial']>;
 }
+
+// "2026-10-01" vira meia-noite no fuso local (TZ), não em UTC — senão o dia "volta" 3 horas.
+export const dataLocal = z.union([
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .transform((v) => {
+      const [a, m, d] = v.split('-').map(Number);
+      return new Date(a, m - 1, d);
+    }),
+  z.coerce.date(),
+]);
+
+export const periodoQuery = z.object({ de: dataLocal.optional(), ate: dataLocal.optional() });

@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { Hammer } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
-// Tela provisória para módulos cuja interface entra na Fase 4.
+// Tela para endereços inexistentes.
 export function EmBreve({ titulo, descricao }: { titulo: string; descricao: string }) {
   return (
     <div className="mx-auto max-w-3xl">
@@ -12,7 +12,6 @@ export function EmBreve({ titulo, descricao }: { titulo: string; descricao: stri
           <Hammer className="size-6 text-laranja" />
         </span>
         <p className="text-texto">{descricao}</p>
-        <p className="text-sm text-apagado">Esta tela entra na Fase 4. A API já está pronta.</p>
         <Link to="/" className="mt-2 rounded-lg bg-laranja-escuro px-4 py-2 text-sm font-medium text-white hover:bg-laranja">
           Voltar ao início
         </Link>

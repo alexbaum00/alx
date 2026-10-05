@@ -4,6 +4,8 @@ import * as s from '../schemas/vendas.js';
 import * as vendaService from '../services/vendaService.js';
 import * as orcamentoService from '../services/orcamentoService.js';
 import * as dashboardService from '../services/dashboardService.js';
+import * as relatorioService from '../services/relatorioService.js';
+import { periodoQuery } from '../schemas/common.js';
 
 // Vendas não têm DELETE: o caminho é cancelar, que devolve as peças ao estoque.
 export async function vendaRoutes(app: FastifyInstance) {
@@ -42,4 +44,15 @@ export async function orcamentoRoutes(app: FastifyInstance) {
 
 export async function dashboardRoutes(app: FastifyInstance) {
   app.get('/stats', async () => dashboardService.estatisticas());
+}
+
+export async function relatorioRoutes(app: FastifyInstance) {
+  app.get('/financeiro', async (req) => {
+    const { de, ate } = periodoQuery.parse(req.query);
+    return relatorioService.resumoFinanceiro(de, ate);
+  });
+  app.get('/vendas', async (req) => {
+    const { de, ate } = periodoQuery.parse(req.query);
+    return relatorioService.relatorioVendas(de, ate);
+  });
 }

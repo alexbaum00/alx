@@ -17,7 +17,7 @@ import {
   servicoRoutes,
   veiculoRoutes,
 } from './routes/cadastros.js';
-import { dashboardRoutes, orcamentoRoutes, vendaRoutes } from './routes/vendas.js';
+import { dashboardRoutes, orcamentoRoutes, relatorioRoutes, vendaRoutes } from './routes/vendas.js';
 
 export async function buildApp(opts: FastifyServerOptions = {}) {
   const app = Fastify(opts);
@@ -60,6 +60,7 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   await app.register(orcamentoRoutes, { prefix: '/api/orcamentos' });
   await app.register(despesaRoutes, { prefix: '/api/despesas' });
   await app.register(empresaRoutes, { prefix: '/api/empresa' });
+  await app.register(relatorioRoutes, { prefix: '/api/relatorios' });
 
   // Em produção, o mesmo servidor entrega o frontend compilado (uma porta só no celular).
   const frontend = resolve(import.meta.dirname, '..', '..', 'frontend', 'dist');
