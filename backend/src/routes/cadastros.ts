@@ -33,7 +33,7 @@ export async function produtoRoutes(app: FastifyInstance) {
 }
 
 export async function servicoRoutes(app: FastifyInstance) {
-  registrarCrud(app, servicoService, { create: s.servicoCreate, update: s.servicoUpdate });
+  registrarCrud(app, servicoService, { create: s.servicoCreate, update: s.servicoUpdate, list: s.servicoList });
 }
 
 export async function procedimentoRoutes(app: FastifyInstance) {

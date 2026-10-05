@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PackageOpen, Plus, Trash2, TriangleAlert, Wrench } from 'lucide-react';
 import { api, type ItemDocumento, type Pagina, type ProdutoResumo } from '@/lib/api';
 import { formatarMoeda, formatarQuantidade } from '@/lib/formato';
+import { estiloCategoria } from '@/lib/categoriasServico';
 import { Seletor } from '@/components/ui/Seletor';
 import { CampoDinheiro, CampoQuantidade, Input, lerNumero } from '@/components/ui/Campos';
 import { Botao } from '@/components/ui/Botao';
@@ -74,12 +75,12 @@ async function buscarProdutosEServicos(termo: string): Promise<Opcao[]> {
   const q = `porPagina=8&busca=${encodeURIComponent(termo)}`;
   const [produtos, servicos] = await Promise.all([
     api<Pagina<ProdutoResumo>>(`/produtos?${q}`),
-    api<Pagina<{ id: number; nome: string; precoCentavos: number; ativo: boolean }>>(`/servicos?${q}`),
+    api<Pagina<{ id: number; nome: string; precoCentavos: number; ativo: boolean; categoria: string }>>(`/servicos?${q}`),
   ]);
   return [
     ...servicos.itens
       .filter((s) => s.ativo)
-      .map((s) => ({ id: -s.id, tipo: 'SERVICO' as const, refId: s.id, nome: s.nome, preco: s.precoCentavos, detalhe: `Serviço · ${formatarMoeda(s.precoCentavos)}` })),
+      .map((s) => ({ id: -s.id, tipo: 'SERVICO' as const, refId: s.id, nome: s.nome, preco: s.precoCentavos, detalhe: `Serviço · ${estiloCategoria(s.categoria).rotulo} · ${formatarMoeda(s.precoCentavos)}` })),
     ...produtos.itens.map((p) => ({
       id: p.id,
       tipo: 'PRODUTO' as const,

@@ -65,14 +65,17 @@ export const ajusteEstoque = z.object({
   motivo: z.string().trim().min(1, 'Informe o motivo do ajuste'),
 });
 
+export const categoriasServico = ['ELETRICA', 'PELICULA', 'SOM', 'CHAVE', 'OUTROS'] as const;
 export const servicoCreate = z.object({
   nome: z.string().trim().min(1, 'Nome é obrigatório'),
+  categoria: z.enum(categoriasServico, { error: 'Escolha a categoria' }).default('OUTROS'),
   descricao: textoOpcional,
   precoCentavos: centavos.default(0),
   tempoEstimadoMin: z.number().int().min(0).nullish(),
   ativo: z.boolean().default(true),
 });
 export const servicoUpdate = parcial(servicoCreate);
+export const servicoList = listQuery.extend({ categoria: z.enum(categoriasServico).optional() });
 
 export const procedimentoCreate = z.object({
   veiculoId: idOpcional,
@@ -143,6 +146,7 @@ export type ProdutoCreate = z.infer<typeof produtoCreate>;
 export type ProdutoUpdate = z.infer<typeof produtoUpdate>;
 export type ServicoCreate = z.infer<typeof servicoCreate>;
 export type ServicoUpdate = z.infer<typeof servicoUpdate>;
+export type ServicoList = z.infer<typeof servicoList>;
 export type ProcedimentoCreate = z.infer<typeof procedimentoCreate>;
 export type ProcedimentoUpdate = z.infer<typeof procedimentoUpdate>;
 export type FerramentaCreate = z.infer<typeof ferramentaCreate>;

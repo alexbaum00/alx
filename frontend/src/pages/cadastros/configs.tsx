@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/Badge';
 import { IconeProduto } from '@/components/ui/IconeProduto';
 import { buscarClientes, buscarFornecedores, buscarVeiculos } from '@/lib/buscas';
 import { formatarMoeda, formatarPlaca, formatarQuantidade } from '@/lib/formato';
+import { categoriasServico } from '@/lib/categoriasServico';
 
 const ufs = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
 
@@ -228,6 +229,14 @@ export const configServicos: ConfigCadastro = {
   placeholderBusca: 'Buscar serviço…',
   campos: [
     { nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true, placeholder: 'Revisão elétrica' },
+    {
+      nome: 'categoria',
+      rotulo: 'Categoria',
+      tipo: 'opcoes',
+      obrigatorio: true,
+      padrao: 'ELETRICA',
+      opcoes: categoriasServico.map((c) => ({ valor: c.valor, rotulo: c.rotulo })),
+    },
     { nome: 'precoCentavos', rotulo: 'Preço sugerido', tipo: 'dinheiro', largura: 'metade' },
     { nome: 'tempoEstimadoMin', rotulo: 'Tempo estimado (min)', tipo: 'inteiro', largura: 'metade' },
     { nome: 'descricao', rotulo: 'Descrição', tipo: 'textarea' },

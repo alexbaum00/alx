@@ -154,6 +154,8 @@ model Servico {
   descricao        String?
   precoCentavos    Int             @default(0)
   tempoEstimadoMin Int?
+  // ELETRICA, PELICULA, SOM, CHAVE ou OUTROS (lista fixa: cada uma tem a cor do seu bloco)
+  categoria        String          @default("OUTROS")
   ativo            Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -161,6 +163,7 @@ model Servico {
   itensOrcamento   ItemOrcamento[]
 
   @@index([nome])
+  @@index([categoria])
 }
 
 // Base de conhecimento técnico: defeitos, diagnósticos e macetes.

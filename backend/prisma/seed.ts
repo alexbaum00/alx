@@ -28,11 +28,13 @@ async function main() {
 
   await prisma.servico.createMany({
     data: [
-      { nome: 'Revisão elétrica', precoCentavos: 15000, tempoEstimadoMin: 60 },
-      { nome: 'Troca de bateria', precoCentavos: 3000, tempoEstimadoMin: 20 },
-      { nome: 'Instalação de som', precoCentavos: 20000, tempoEstimadoMin: 120 },
-      { nome: 'Reparo de alternador', precoCentavos: 18000, tempoEstimadoMin: 90 },
-      { nome: 'Diagnóstico com scanner', precoCentavos: 10000, tempoEstimadoMin: 30 },
+      { nome: 'Revisão elétrica', categoria: 'ELETRICA', precoCentavos: 15000, tempoEstimadoMin: 60 },
+      { nome: 'Troca de bateria', categoria: 'ELETRICA', precoCentavos: 3000, tempoEstimadoMin: 20 },
+      { nome: 'Instalação de som', categoria: 'SOM', precoCentavos: 20000, tempoEstimadoMin: 120 },
+      { nome: 'Reparo de alternador', categoria: 'ELETRICA', precoCentavos: 18000, tempoEstimadoMin: 90 },
+      { nome: 'Diagnóstico com scanner', categoria: 'ELETRICA', precoCentavos: 10000, tempoEstimadoMin: 30 },
+      { nome: 'Aplicação de película profissional', categoria: 'PELICULA', precoCentavos: 40000, tempoEstimadoMin: 240 },
+      { nome: 'Cópia de chave com transponder', categoria: 'CHAVE', precoCentavos: 25000, tempoEstimadoMin: 40 },
     ],
   });
 

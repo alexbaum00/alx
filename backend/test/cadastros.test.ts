@@ -88,3 +88,21 @@ describe('despesas e empresa', () => {
     expect(empresa.json()).toMatchObject({ nomeFantasia: 'ALX Auto Elétrica', cnpj: '12345678000190', uf: 'SP' });
   });
 });
+
+describe('serviços por categoria', () => {
+  it('guarda a categoria, usa OUTROS por padrão, recusa categoria fora da lista e filtra', async () => {
+    const radio = await post('/api/servicos', { nome: 'Instalação Rádio MP3', categoria: 'SOM', precoCentavos: 6000 });
+    expect(radio.statusCode).toBe(201);
+    expect(radio.json().categoria).toBe('SOM');
+    expect((await post('/api/servicos', { nome: 'Lavagem' })).json().categoria).toBe('OUTROS');
+    expect((await post('/api/servicos', { nome: 'X', categoria: 'Pelicula' })).statusCode).toBe(400);
+    await post('/api/servicos', { nome: 'Remoção de película', categoria: 'PELICULA' });
+
+    expect((await get('/api/servicos?categoria=SOM')).json().total).toBe(1);
+    expect((await get('/api/servicos?categoria=INVALIDA')).statusCode).toBe(400);
+
+    // editar só o preço mantém a categoria
+    const editado = await app.inject({ method: 'PUT', url: `/api/servicos/${radio.json().id}`, payload: { precoCentavos: 7000 } });
+    expect(editado.json()).toMatchObject({ categoria: 'SOM', precoCentavos: 7000 });
+  });
+});

@@ -1,10 +1,13 @@
 import { prisma } from '../lib/prisma.js';
 import { NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
-import type { ServicoCreate, ServicoUpdate } from '../schemas/cadastros.js';
+import type { ServicoCreate, ServicoList, ServicoUpdate } from '../schemas/cadastros.js';
 
-export async function listar(q: { busca?: string; pagina: number; porPagina: number }) {
-  const where = q.busca ? { OR: [{ nome: { contains: q.busca } }, { descricao: { contains: q.busca } }] } : {};
+export async function listar(q: ServicoList) {
+  const where = {
+    categoria: q.categoria,
+    ...(q.busca && { OR: [{ nome: { contains: q.busca } }, { descricao: { contains: q.busca } }] }),
+  };
   const [itens, total] = await prisma.$transaction([
     prisma.servico.findMany({ where, orderBy: { nome: 'asc' }, ...paginar(q.pagina, q.porPagina) }),
     prisma.servico.count({ where }),

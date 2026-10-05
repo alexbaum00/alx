@@ -106,6 +106,7 @@ Sessões valem 30 dias e são renovadas com o uso. O cookie não tem a flag `Sec
 - **Segurança**: o tipo é conferido pelos primeiros bytes (JPEG, PNG, WebP), não pelo cabeçalho; ids são 32 caracteres hexadecimais aleatórios, validados antes de tocar no disco; a rota exige login; uma foto não pode pertencer a dois registros.
 - **Produto**: uma foto (`Produto.imagemId`), mostrada no lugar do ícone da categoria no painel, no Estoque, em Produtos e na busca do topo.
 - **Procedimento**: até 30 fotos com legenda e ordem; galeria com ampliação (setas, teclado, deslizar no celular).
+- **Categorias de serviço**: lista fixa (Elétrica, Película, Som, Chave, Outros) em `Servico.categoria`, para não surgirem blocos duplicados por grafia diferente. A tela Serviços mostra um bloco por categoria, nessa ordem, com cores em `frontend/src/lib/categoriasServico.ts` (amarelo, grafite, roxo, vermelho, preto). A migração `2_categoria_servico` classifica os serviços já cadastrados por palavra-chave no nome; o resto fica em Outros.
 - **Ferramentas** (Cadastros › Ferramentas): valor por unidade × quantidade; o resumo soma o investido sem as descartadas, por categoria, e conta as em manutenção e na garantia.
 
 ## Pendências conhecidas
