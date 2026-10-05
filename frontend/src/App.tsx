@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Dashboard } from '@/pages/Dashboard';
-import { Cadastros } from '@/pages/Cadastros';
+import { Cadastros } from '@/pages/cadastros/Inicio';
 import { Procedimentos } from '@/pages/Procedimentos';
 import { EmBreve } from '@/pages/EmBreve';
 import { Clientes, Fornecedores, Produtos, Servicos, Veiculos } from '@/pages/cadastros';
