@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { HardDriveDownload, Save, Smartphone } from 'lucide-react';
+import { HardDriveDownload, KeyRound, Save, Smartphone } from 'lucide-react';
 import { api, ApiError, type Empresa } from '@/lib/api';
 import { Card } from '@/components/ui/Card';
 import { Botao } from '@/components/ui/Botao';
@@ -87,25 +87,137 @@ export function Configuracoes() {
         </form>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card className="p-4">
-          <h2 className="mb-2 flex items-center gap-2 font-semibold text-white">
-            <Smartphone className="size-4 text-laranja" /> Acesso pelo celular
-          </h2>
-          <p className="text-sm text-suave">
-            Com o celular no mesmo Wi-Fi, abra o endereço que aparece no computador ao iniciar o sistema (algo como <code className="text-texto">http://192.168.1.10:3000</code>). Você está acessando agora por{' '}
-            <code className="text-texto">{window.location.host}</code>.
-          </p>
-        </Card>
-        <Card className="p-4">
-          <h2 className="mb-2 flex items-center gap-2 font-semibold text-white">
-            <HardDriveDownload className="size-4 text-laranja" /> Backup
-          </h2>
-          <p className="text-sm text-suave">
-            No computador, rode <code className="text-texto">npm run db:backup</code>. Uma cópia datada do banco vai para a pasta <code className="text-texto">backups/</code>; guarde-a num pen drive ou no Google Drive.
-          </p>
-        </Card>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <AcessoCelular />
+        <Backups />
+        <TrocarSenha />
       </div>
     </div>
+  );
+}
+
+function AcessoCelular() {
+  const { data } = useQuery({
+    queryKey: ['sistema', 'acesso'],
+    queryFn: () => api<{ enderecos: { url: string; qrSvg: string }[] }>('/sistema/acesso'),
+  });
+  return (
+    <Card className="p-4">
+      <h2 className="mb-2 flex items-center gap-2 font-semibold text-white">
+        <Smartphone className="size-4 text-laranja" /> Acesso pelo celular
+      </h2>
+      <p className="mb-3 text-sm text-suave">Com o celular no mesmo Wi-Fi, aponte a câmera para o código ou digite o endereço.</p>
+      {data?.enderecos.length ? (
+        <div className="flex flex-wrap gap-4">
+          {data.enderecos.map((e) => (
+            <div key={e.url} className="flex flex-col items-center gap-2">
+              {/* SVG gerado no servidor pela biblioteca qrcode a partir do próprio endereço */}
+              <div className="size-36 rounded-lg bg-white p-1" dangerouslySetInnerHTML={{ __html: e.qrSvg }} />
+              <code className="text-xs text-texto">{e.url}</code>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-apagado">Nenhuma rede encontrada neste computador.</p>
+      )}
+      <p className="mt-3 text-xs text-apagado">
+        Se o endereço mudar depois de reiniciar o roteador, reserve um IP fixo para este computador nas configurações do roteador.
+      </p>
+    </Card>
+  );
+}
+
+interface InfoBackup {
+  pasta: string;
+  automatico: boolean;
+  manter: number;
+  ultimos: { arquivo: string; tamanhoBytes: number; data: string }[];
+}
+
+function Backups() {
+  const qc = useQueryClient();
+  const avisar = useAviso();
+  const { data } = useQuery({ queryKey: ['sistema', 'backup'], queryFn: () => api<InfoBackup>('/sistema/backup') });
+  const agora = useMutation({
+    mutationFn: () => api<{ caminho: string }>('/sistema/backup', { method: 'POST' }),
+    onSuccess: (r) => {
+      qc.invalidateQueries({ queryKey: ['sistema', 'backup'] });
+      avisar(`Backup salvo em ${r.caminho}`);
+    },
+    onError: (e) => avisar(e.message, 'erro'),
+  });
+  return (
+    <Card className="p-4">
+      <h2 className="mb-2 flex items-center gap-2 font-semibold text-white">
+        <HardDriveDownload className="size-4 text-laranja" /> Backup
+      </h2>
+      <p className="mb-3 text-sm text-suave">
+        {data?.automatico ? `Automático, uma vez por dia; guarda os últimos ${data.manter}.` : 'Backup automático desligado.'}{' '}
+        Copie a pasta para um pen drive de vez em quando, ou aponte-a para o Google Drive no arquivo <code className="text-texto">backend/.env</code>.
+      </p>
+      {data && <p className="mb-2 truncate text-xs text-apagado" title={data.pasta}>Pasta: {data.pasta}</p>}
+      <ul className="mb-3 space-y-1 text-sm">
+        {data?.ultimos.length ? (
+          data.ultimos.map((b) => (
+            <li key={b.arquivo} className="flex justify-between gap-2">
+              <span className="text-texto">{new Date(b.data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+              <span className="text-apagado">{(b.tamanhoBytes / 1024).toFixed(0)} KB</span>
+            </li>
+          ))
+        ) : (
+          <li className="text-apagado">Nenhum backup ainda.</li>
+        )}
+      </ul>
+      <Botao variante="secundario" carregando={agora.isPending} onClick={() => agora.mutate()}>
+        Fazer backup agora
+      </Botao>
+    </Card>
+  );
+}
+
+function TrocarSenha() {
+  const [atual, setAtual] = useState('');
+  const [nova, setNova] = useState('');
+  const [confirmacao, setConfirmacao] = useState('');
+  const avisar = useAviso();
+  const trocar = useMutation({
+    mutationFn: () => api('/auth/trocar-senha', { method: 'POST', body: JSON.stringify({ atual, nova }) }),
+    onSuccess: () => {
+      setAtual('');
+      setNova('');
+      setConfirmacao('');
+      avisar('Senha trocada. Os outros aparelhos vão pedir a senha nova.');
+    },
+    onError: (e) => avisar(e.message, 'erro'),
+  });
+  return (
+    <Card className="p-4 md:col-span-2">
+      <h2 className="mb-3 flex items-center gap-2 font-semibold text-white">
+        <KeyRound className="size-4 text-laranja" /> Trocar senha
+      </h2>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (nova.length < 4) return avisar('A nova senha precisa de pelo menos 4 caracteres.', 'erro');
+          if (nova !== confirmacao) return avisar('As senhas novas não conferem.', 'erro');
+          trocar.mutate();
+        }}
+        className="grid grid-cols-1 items-end gap-4 sm:grid-cols-4"
+      >
+        <Campo rotulo="Senha atual">
+          <Input type="password" autoComplete="current-password" value={atual} onChange={(e) => setAtual(e.target.value)} />
+        </Campo>
+        <Campo rotulo="Nova senha">
+          <Input type="password" autoComplete="new-password" value={nova} onChange={(e) => setNova(e.target.value)} />
+        </Campo>
+        <Campo rotulo="Repita a nova senha">
+          <Input type="password" autoComplete="new-password" value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} />
+        </Campo>
+        <Botao type="submit" carregando={trocar.isPending} disabled={!atual || !nova}>
+          Trocar senha
+        </Botao>
+      </form>
+      <p className="mt-2 text-xs text-apagado">Ao trocar, todos os outros aparelhos conectados saem e precisam da senha nova.</p>
+    </Card>
   );
 }

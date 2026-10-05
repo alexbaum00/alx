@@ -8,6 +8,8 @@ export class ApiError extends Error {
   }
 }
 
+export const EVENTO_SESSAO_EXPIRADA = 'alx:sessao-expirada';
+
 export async function api<T>(caminho: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${caminho}`, {
     ...init,
@@ -15,6 +17,8 @@ export async function api<T>(caminho: string, init?: RequestInit): Promise<T> {
   });
   if (res.status === 204) return undefined as T;
   const corpo = await res.json().catch(() => null);
+  // sessão vencida ou encerrada em outro aparelho: a tela de acesso assume
+  if (res.status === 401 && !caminho.startsWith('/auth/')) window.dispatchEvent(new Event(EVENTO_SESSAO_EXPIRADA));
   if (!res.ok) throw new ApiError(corpo?.erro ?? `Erro ${res.status}`, res.status, corpo?.campos);
   return corpo as T;
 }
@@ -186,4 +190,10 @@ export interface Empresa {
   cidade: string | null;
   uf: string | null;
   urlEmissorNfe: string | null;
+}
+
+export interface EstadoAcesso {
+  senhaDefinida: boolean;
+  autenticado: boolean;
+  acessoLocal: boolean;
 }

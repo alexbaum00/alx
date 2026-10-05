@@ -12,6 +12,10 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   // define o que é "hoje" no painel, independente do fuso da máquina
   TZ: z.string().default('America/Sao_Paulo'),
+  // pasta dos backups automáticos (pode ser uma pasta sincronizada com o Google Drive)
+  BACKUP_DIR: z.string().optional(),
+  BACKUP_MANTER: z.coerce.number().int().min(1).default(30),
+  BACKUP_AUTOMATICO: z.stringbool().default(true),
 });
 
 export const env = envSchema.parse(process.env);

@@ -1,12 +1,14 @@
 import Fastify, { type FastifyServerOptions } from 'fastify';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import { AppError } from './lib/errors.js';
 import { healthRoutes } from './routes/health.js';
+import { authRoutes, protegerApi } from './routes/auth.js';
+import { sistemaRoutes } from './routes/sistema.js';
 import { clienteRoutes } from './routes/clientes.js';
 import {
   despesaRoutes,
@@ -19,10 +21,13 @@ import {
 } from './routes/cadastros.js';
 import { dashboardRoutes, orcamentoRoutes, relatorioRoutes, vendaRoutes } from './routes/vendas.js';
 
-export async function buildApp(opts: FastifyServerOptions = {}) {
+// autenticacao: false só nos testes das regras de negócio (os testes de login usam o padrão).
+export async function buildApp({ autenticacao = true, ...opts }: FastifyServerOptions & { autenticacao?: boolean } = {}) {
   const app = Fastify(opts);
 
-  await app.register(cors, { origin: true });
+  // Tela e API ficam na mesma origem, então não há CORS: outros sites não leem a API.
+  await app.register(cookie);
+  if (autenticacao) protegerApi(app);
 
   app.setErrorHandler((error, req, reply) => {
     if (error instanceof ZodError) {
@@ -49,6 +54,7 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   });
 
   await app.register(healthRoutes, { prefix: '/api/health' });
+  await app.register(authRoutes, { prefix: '/api/auth' });
   await app.register(dashboardRoutes, { prefix: '/api/dashboard' });
   await app.register(clienteRoutes, { prefix: '/api/clientes' });
   await app.register(veiculoRoutes, { prefix: '/api/veiculos' });
@@ -61,6 +67,7 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   await app.register(despesaRoutes, { prefix: '/api/despesas' });
   await app.register(empresaRoutes, { prefix: '/api/empresa' });
   await app.register(relatorioRoutes, { prefix: '/api/relatorios' });
+  await app.register(sistemaRoutes, { prefix: '/api/sistema' });
 
   // Em produção, o mesmo servidor entrega o frontend compilado (uma porta só no celular).
   const frontend = resolve(import.meta.dirname, '..', '..', 'frontend', 'dist');

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { Menu, Settings } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { LogOut, Menu, Settings } from 'lucide-react';
+import { api, type EstadoAcesso } from '@/lib/api';
+import { CHAVE_ACESSO } from '@/components/acesso/Acesso';
 import { BuscaGlobal } from './BuscaGlobal';
 
 function Relogio() {
@@ -18,6 +21,13 @@ function Relogio() {
 }
 
 export function Header({ onAbrirMenu }: { onAbrirMenu: () => void }) {
+  const qc = useQueryClient();
+  const sair = async () => {
+    await api('/auth/sair', { method: 'POST' }).catch(() => undefined);
+    // limpa os dados em memória para não aparecerem na tela de login
+    qc.removeQueries({ predicate: (q) => q.queryKey[0] !== CHAVE_ACESSO[0] });
+    qc.setQueryData<EstadoAcesso>(CHAVE_ACESSO, (e) => (e ? { ...e, autenticado: false } : e));
+  };
   return (
     <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-borda bg-fundo/90 px-4 py-3 backdrop-blur lg:px-6">
       <button onClick={onAbrirMenu} className="rounded-lg p-2 text-suave hover:bg-card-hover lg:hidden" aria-label="Abrir menu">
@@ -29,6 +39,9 @@ export function Header({ onAbrirMenu }: { onAbrirMenu: () => void }) {
         <Link to="/configuracoes" className="rounded-lg border border-borda bg-card p-2 text-suave hover:text-white" aria-label="Configurações">
           <Settings className="size-5" />
         </Link>
+        <button onClick={sair} className="rounded-lg border border-borda bg-card p-2 text-suave hover:text-white" aria-label="Sair" title="Sair">
+          <LogOut className="size-5" />
+        </button>
       </div>
     </header>
   );

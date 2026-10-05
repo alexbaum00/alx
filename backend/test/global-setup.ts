@@ -7,7 +7,7 @@ export default function setup() {
   for (const sufixo of ['', '-journal', '-wal', '-shm']) {
     rmSync(resolve(import.meta.dirname, '..', 'prisma', `test.db${sufixo}`), { force: true });
   }
-  execSync('npx prisma db push --skip-generate', {
+  execSync('npx prisma migrate deploy', {
     env: { ...process.env, DATABASE_URL: 'file:./test.db' },
     stdio: 'ignore',
   });

@@ -299,3 +299,22 @@ model Despesa {
 
   @@index([data])
 }
+
+// Senha de acesso ao sistema (linha única). Hash scrypt, nunca a senha em texto.
+model Acesso {
+  id           Int      @id @default(1)
+  senhaHash    String
+  atualizadoEm DateTime @updatedAt
+}
+
+// Sessões abertas (navegadores logados). Guarda só o hash do token do cookie.
+model Sessao {
+  id           Int      @id @default(autoincrement())
+  tokenHash    String   @unique
+  dispositivo  String?
+  criadaEm     DateTime @default(now())
+  ultimoAcesso DateTime @default(now())
+  expiraEm     DateTime
+
+  @@index([expiraEm])
+}

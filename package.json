@@ -10,10 +10,11 @@
     "build": "npm run build -w frontend && npm run build -w backend",
     "test": "npm test -w backend",
     "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
-    "db:push": "npm run db:push -w backend",
     "db:seed": "npm run db:seed -w backend",
     "db:backup": "npm run db:backup -w backend",
-    "start": "npm start -w backend"
+    "start": "npm start -w backend",
+    "db:migrate": "npm run db:migrate -w backend",
+    "senha:redefinir": "npm run senha:redefinir -w backend"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

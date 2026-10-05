@@ -7,7 +7,7 @@ import { limparBanco } from './helpers.js';
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  app = await buildApp();
+  app = await buildApp({ autenticacao: false });
 });
 
 afterAll(async () => {

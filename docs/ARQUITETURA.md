@@ -23,7 +23,8 @@ Referência visual: [`layout-referencia.jpg`](layout-referencia.jpg).
 | Tema | tokens em `frontend/src/styles/index.css` (`fundo`, `painel`, `card`, `borda`, `laranja`…) | trocar uma cor em um lugar só |
 | Atalho de teclado | F2 abre Nova Venda | indicado no botão do painel |
 | Produção | um único servidor Fastify servindo API + frontend compilado | uma porta só para abrir no celular |
-| Backup | `npm run db:backup` (`VACUUM INTO`) | cópia consistente mesmo com o sistema aberto |
+| Backup | automático diário + `npm run db:backup` (`VACUUM INTO`), guarda os últimos 30 | cópia consistente mesmo com o sistema aberto |
+| Banco em produção | migrações (`prisma migrate deploy`, roda no `npm start`) | atualizar o sistema nunca apaga dados; `db push` pode descartar colunas |
 
 ## Menu lateral (definido com o usuário)
 
@@ -76,7 +77,28 @@ A cópia usa `navigator.clipboard` quando existe e, pelo IP da rede (sem HTTPS),
 
 Datas `AAAA-MM-DD` vindas da tela são interpretadas no fuso local (`TZ`), não em UTC. Sem isso, "01/10" virava 30/09 às 21h em São Paulo e saía do filtro do mês.
 
+## Segurança (Fase 5)
+
+| Ameaça | Proteção |
+|---|---|
+| Qualquer pessoa no Wi-Fi abre o sistema | senha obrigatória em toda a API (exceto `/api/health` e `/api/auth/*`) |
+| Alguém na rede cria a primeira senha antes do dono | `definir-senha` só é aceito de `127.0.0.1`/`::1`; o servidor não confia em `X-Forwarded-For` |
+| Adivinhar a senha | após 5 erros por endereço, espera de 1, 2, 4… até 30 min |
+| Vazamento do banco | senha guardada com scrypt + sal; sessões guardam só o SHA-256 do token |
+| Roubo do cookie por script | cookie `HttpOnly`; `SameSite=Lax` impede envio a partir de outros sites |
+| Outro site ler a API | sem CORS: tela e API estão na mesma origem |
+| Celular perdido / funcionário que saiu | trocar a senha derruba todas as outras sessões |
+| Senha esquecida | `npm run senha:redefinir`, que exige acesso ao computador |
+
+Sessões valem 30 dias e são renovadas com o uso. O cookie não tem a flag `Secure` porque o acesso na rede local é por `http://IP`. Ao colocar o sistema na nuvem, use HTTPS e ligue `secure` em `routes/auth.ts`.
+
+## Instalação (Fase 5)
+
+- `instalar.bat` chama `scripts/instalar-windows.ps1`, que confere o Node 22+, roda `npm install`, `build` e as migrações, cria a regra de firewall (só perfil Privado, pedindo elevação), o atalho na pasta Inicializar (abre minimizado) e o atalho na área de trabalho.
+- `iniciar.bat` roda `npm start`.
+- `.gitattributes` mantém CRLF nos `.bat`/`.ps1`; o `.ps1` é salvo em UTF-8 com BOM para o PowerShell 5.1 ler os acentos.
+
 ## Pendências conhecidas
 
-- Login com PIN/senha antes de liberar o acesso pela rede (Fase 5).
+- Scripts de Windows escritos e revisados, mas não executados num Windows real durante o desenvolvimento.
 - PWA instalável só com HTTPS (nuvem, mkcert ou túnel).

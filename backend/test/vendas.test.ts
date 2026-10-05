@@ -11,7 +11,7 @@ let revisao: { id: number };
 let cliente: { id: number; veiculos: { id: number }[] };
 
 beforeAll(async () => {
-  app = await buildApp();
+  app = await buildApp({ autenticacao: false });
 });
 
 afterAll(async () => {

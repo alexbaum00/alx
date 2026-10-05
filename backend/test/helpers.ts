@@ -15,5 +15,7 @@ export async function limparBanco() {
     prisma.fornecedor.deleteMany(),
     prisma.servico.deleteMany(),
     prisma.despesa.deleteMany(),
+    prisma.sessao.deleteMany(),
+    prisma.acesso.deleteMany(),
   ]);
 }
