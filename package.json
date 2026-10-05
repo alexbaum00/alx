@@ -1,0 +1,14 @@
+{
+  "name": "alx-auto-eletrica",
+  "private": true,
+  "workspaces": ["backend"],
+  "scripts": {
+    "dev": "npm run dev -w backend",
+    "build": "npm run build -w backend",
+    "test": "npm test -w backend",
+    "typecheck": "npm run typecheck -w backend",
+    "db:push": "npm run db:push -w backend",
+    "db:seed": "npm run db:seed -w backend",
+    "db:backup": "npm run db:backup -w backend"
+  }
+}

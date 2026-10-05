@@ -1,0 +1,241 @@
+// Modelagem do sistema ALX Auto Elétrica.
+// Convenções:
+// - Valores em dinheiro são inteiros em centavos (campos terminados em "Centavos").
+// - Quantidades são Float porque cabos e fios são vendidos por metro.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusVenda {
+  ORCAMENTO
+  ABERTO
+  CONCLUIDO
+  PAGO
+  CANCELADO
+}
+
+enum FormaPagamento {
+  PIX
+  DINHEIRO
+  CARTAO_DEBITO
+  CARTAO_CREDITO
+  BOLETO
+  OUTRO
+}
+
+enum TipoItem {
+  PRODUTO
+  SERVICO
+}
+
+enum TipoMovimentacao {
+  ENTRADA
+  SAIDA
+  AJUSTE
+}
+
+// Dados da própria oficina (linha única), usados no cabeçalho e na cópia para NF.
+model Empresa {
+  id           Int     @id @default(1)
+  nomeFantasia String  @default("ALX Auto Elétrica")
+  razaoSocial  String?
+  cnpj         String?
+  telefone     String?
+  email        String?
+  cep          String?
+  endereco     String?
+  numero       String?
+  bairro       String?
+  cidade       String?
+  uf           String?
+}
+
+model Cliente {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  cpfCnpj     String?   @unique
+  telefone    String?
+  email       String?
+  cep         String?
+  endereco    String?
+  numero      String?
+  complemento String?
+  bairro      String?
+  cidade      String?
+  uf          String?
+  observacoes String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  veiculos    Veiculo[]
+  vendas      Venda[]
+
+  @@index([nome])
+}
+
+model Veiculo {
+  id            Int            @id @default(autoincrement())
+  clienteId     Int
+  cliente       Cliente        @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  placa         String         @unique
+  marca         String?
+  modelo        String
+  ano           Int?
+  cor           String?
+  kmAtual       Int?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  vendas        Venda[]
+  procedimentos Procedimento[]
+
+  @@index([clienteId])
+}
+
+model Fornecedor {
+  id                 Int       @id @default(autoincrement())
+  razaoSocial        String
+  nomeFantasia       String?
+  cnpj               String?   @unique
+  telefone           String?
+  email              String?
+  contato            String?
+  produtosFornecidos String?
+  observacoes        String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  produtos           Produto[]
+}
+
+model Produto {
+  id                 Int                    @id @default(autoincrement())
+  fornecedorId       Int?
+  fornecedor         Fornecedor?            @relation(fields: [fornecedorId], references: [id], onDelete: SetNull)
+  sku                String?                @unique // código de barras ou código interno
+  nome               String
+  categoria          String? // Lâmpadas, Relés, Baterias, Cabos...
+  unidade            String                 @default("un") // un, m, par, kit
+  precoCustoCentavos Int                    @default(0)
+  precoVendaCentavos Int                    @default(0)
+  estoqueAtual       Float                  @default(0)
+  estoqueMinimo      Float                  @default(0)
+  ativo              Boolean                @default(true)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  itensVenda         ItemVenda[]
+  movimentacoes      MovimentacaoEstoque[]
+
+  @@index([nome])
+  @@index([categoria])
+}
+
+// Catálogo de mão de obra (tela "Serviços"): itens com preço sugerido.
+model Servico {
+  id                  Int         @id @default(autoincrement())
+  nome                String
+  descricao           String?
+  precoCentavos       Int         @default(0)
+  tempoEstimadoMin    Int?
+  ativo               Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  itensVenda          ItemVenda[]
+
+  @@index([nome])
+}
+
+// Base de conhecimento técnico: defeitos, diagnósticos e macetes.
+model Procedimento {
+  id                       Int      @id @default(autoincrement())
+  veiculoId                Int?
+  veiculo                  Veiculo? @relation(fields: [veiculoId], references: [id], onDelete: SetNull)
+  modeloVeiculo            String
+  defeitoReclamado         String
+  diagnosticoEncontrado    String?
+  solucaoAplicada          String?
+  esquemaEletricoAnotacoes String? // pinagem de chicote, códigos de erro, macetes
+  tags                     String? // palavras-chave separadas por vírgula
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([modeloVeiculo])
+}
+
+// Venda / Ordem de Serviço. Um orçamento é uma venda com status ORCAMENTO.
+model Venda {
+  id                    Int                   @id @default(autoincrement())
+  clienteId             Int?
+  cliente               Cliente?              @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  veiculoId             Int?
+  veiculo               Veiculo?              @relation(fields: [veiculoId], references: [id], onDelete: Restrict)
+  data                  DateTime              @default(now())
+  status                StatusVenda           @default(ABERTO)
+  formaPagamento        FormaPagamento?
+  kmEntrada             Int?
+  descontoCentavos      Int                   @default(0)
+  totalProdutosCentavos Int                   @default(0)
+  totalServicosCentavos Int                   @default(0)
+  valorTotalCentavos    Int                   @default(0)
+  // true quando as peças já saíram do estoque; evita baixa em dobro e permite estorno ao cancelar
+  estoqueBaixado        Boolean               @default(false)
+  observacoes           String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  itens                 ItemVenda[]
+  movimentacoes         MovimentacaoEstoque[]
+
+  @@index([data])
+  @@index([status])
+}
+
+model ItemVenda {
+  id                    Int      @id @default(autoincrement())
+  vendaId               Int
+  venda                 Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  tipo                  TipoItem
+  produtoId             Int?
+  produto               Produto? @relation(fields: [produtoId], references: [id], onDelete: Restrict)
+  servicoId             Int?
+  servico               Servico? @relation(fields: [servicoId], references: [id], onDelete: SetNull)
+  // descrição e preço ficam gravados no item: mudar o cadastro depois não altera vendas antigas
+  descricao             String
+  quantidade            Float    @default(1)
+  valorUnitarioCentavos Int
+  valorTotalCentavos    Int
+
+  @@index([vendaId])
+}
+
+// Histórico de entradas e saídas (atalho "Entrada no Estoque" e baixas de venda).
+model MovimentacaoEstoque {
+  id                    Int              @id @default(autoincrement())
+  produtoId             Int
+  produto               Produto          @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  tipo                  TipoMovimentacao
+  quantidade            Float // positiva para entrada, negativa para saída
+  custoUnitarioCentavos Int?
+  motivo                String?
+  vendaId               Int?
+  venda                 Venda?           @relation(fields: [vendaId], references: [id], onDelete: SetNull)
+  createdAt             DateTime         @default(now())
+
+  @@index([produtoId])
+}
+
+// Saídas de caixa para a tela "Financeiro" (as entradas vêm das vendas pagas).
+model Despesa {
+  id            Int      @id @default(autoincrement())
+  descricao     String
+  categoria     String? // aluguel, energia, fornecedor, DAS-MEI...
+  valorCentavos Int
+  data          DateTime @default(now())
+  pago          Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([data])
+}
