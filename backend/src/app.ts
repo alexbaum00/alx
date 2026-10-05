@@ -1,5 +1,8 @@
 import Fastify, { type FastifyServerOptions } from 'fastify';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import { AppError } from './lib/errors.js';
@@ -57,6 +60,16 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   await app.register(orcamentoRoutes, { prefix: '/api/orcamentos' });
   await app.register(despesaRoutes, { prefix: '/api/despesas' });
   await app.register(empresaRoutes, { prefix: '/api/empresa' });
+
+  // Em produção, o mesmo servidor entrega o frontend compilado (uma porta só no celular).
+  const frontend = resolve(import.meta.dirname, '..', '..', 'frontend', 'dist');
+  if (existsSync(frontend)) {
+    await app.register(fastifyStatic, { root: frontend });
+    app.setNotFoundHandler((req, reply) => {
+      if (req.method === 'GET' && !req.url.startsWith('/api/')) return reply.sendFile('index.html');
+      return reply.code(404).send({ erro: 'Rota não encontrada' });
+    });
+  }
 
   return app;
 }

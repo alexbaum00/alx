@@ -19,6 +19,9 @@ Referência visual: [`layout-referencia.jpg`](layout-referencia.jpg).
 | Itens de venda | guardam descrição e preço do momento | mudar o cadastro não altera vendas antigas |
 | Exclusão de venda | não existe; usa-se cancelar | mantém o histórico e devolve as peças |
 | Fuso | `TZ=America/Sao_Paulo` | define o que é "hoje" no painel |
+| Frontend | React 19 + Vite 8 + Tailwind 4 + React Router + TanStack Query, ícones Lucide | componentes próprios no lugar do shadcn, que exigiria Radix e CLI para poucos componentes |
+| Tema | tokens em `frontend/src/styles/index.css` (`fundo`, `painel`, `card`, `borda`, `laranja`…) | trocar uma cor em um lugar só |
+| Atalho de teclado | F2 abre Nova Venda | indicado no botão do painel |
 | Produção | um único servidor Fastify servindo API + frontend compilado | uma porta só para abrir no celular |
 | Backup | `npm run db:backup` (`VACUUM INTO`) | cópia consistente mesmo com o sistema aberto |
 
@@ -42,7 +45,7 @@ Diferenças em relação à imagem: "Clientes" e "Serviços" saem do primeiro n�
 
 | Tela / atalho | API | Fase |
 |---|---|---|
-| Início (cards + tabelas) | `GET /api/dashboard/stats` | 2 ✅ |
+| Início (cards + tabelas) | `GET /api/dashboard/stats` | 3 ✅ |
 | Vendas / Nova Venda | `/api/vendas` | 2 ✅ (tela na 4) |
 | Orçamentos / Novo Orçamento | `/api/orcamentos` + `POST /:id/converter` | 2 ✅ (tela na 4) |
 | Cadastros ▸ Clientes | `/api/clientes` | 1 ✅ |
@@ -51,11 +54,13 @@ Diferenças em relação à imagem: "Clientes" e "Serviços" saem do primeiro n�
 | Cadastros ▸ Produtos | `/api/produtos` | 2 ✅ |
 | Cadastros ▸ Serviços | `/api/servicos` | 2 ✅ |
 | Estoque / Entrada no Estoque | `/api/produtos/estoque-baixo`, `POST /:id/entrada`, `POST /:id/ajuste` | 2 ✅ |
-| Procedimentos | `/api/procedimentos?busca=` (várias palavras, todos os campos) | 2 ✅ |
+| Procedimentos | `/api/procedimentos?busca=` (várias palavras, todos os campos) | consulta 3 ✅, cadastro na 4 |
 | Financeiro | vendas pagas + `/api/despesas` | 2 ✅ (resumo na 4) |
 | Relatórios | consultas agregadas sobre vendas | 4 |
 | Configurações | `/api/empresa` | 2 ✅ |
-| Busca do topo | busca global | 3 |
+| Busca do topo | clientes, veículos e peças ao mesmo tempo | 3 ✅ |
+
+Na Fase 3 ficaram prontos o layout (menu lateral retrátil no celular), a tela Início ligada à API, a busca global e a consulta de Procedimentos. As demais telas mostram um aviso provisório até a Fase 4. Prints em [`prints/`](prints/).
 
 ## Pendências conhecidas
 
