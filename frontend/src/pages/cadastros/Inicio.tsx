@@ -8,6 +8,7 @@ const descricoes: Record<string, string> = {
   '/cadastros/fornecedores': 'Distribuidores e contatos',
   '/cadastros/produtos': 'Peças, preços e estoque mínimo',
   '/cadastros/servicos': 'Mão de obra com preço sugerido',
+  '/cadastros/ferramentas': 'Equipamentos da oficina e quanto foi investido',
 };
 
 export function Cadastros() {

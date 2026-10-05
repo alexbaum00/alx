@@ -56,6 +56,7 @@ export async function estatisticas() {
       estoqueAtual: p.estoqueAtual,
       estoqueMinimo: p.estoqueMinimo,
       estoqueBaixo: p.estoqueAtual <= p.estoqueMinimo,
+      imagemId: p.imagemId,
     })),
     veiculosRecentes: veiculos.map((v) => ({
       vendaId: v.id,

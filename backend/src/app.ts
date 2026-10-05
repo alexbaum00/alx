@@ -9,10 +9,12 @@ import { AppError } from './lib/errors.js';
 import { healthRoutes } from './routes/health.js';
 import { authRoutes, protegerApi } from './routes/auth.js';
 import { sistemaRoutes } from './routes/sistema.js';
+import { imagemRoutes } from './routes/imagens.js';
 import { clienteRoutes } from './routes/clientes.js';
 import {
   despesaRoutes,
   empresaRoutes,
+  ferramentaRoutes,
   fornecedorRoutes,
   procedimentoRoutes,
   produtoRoutes,
@@ -68,6 +70,8 @@ export async function buildApp({ autenticacao = true, ...opts }: FastifyServerOp
   await app.register(empresaRoutes, { prefix: '/api/empresa' });
   await app.register(relatorioRoutes, { prefix: '/api/relatorios' });
   await app.register(sistemaRoutes, { prefix: '/api/sistema' });
+  await app.register(imagemRoutes, { prefix: '/api/imagens' });
+  await app.register(ferramentaRoutes, { prefix: '/api/ferramentas' });
 
   // Em produção, o mesmo servidor entrega o frontend compilado (uma porta só no celular).
   const frontend = resolve(import.meta.dirname, '..', '..', 'frontend', 'dist');

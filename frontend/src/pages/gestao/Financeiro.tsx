@@ -46,7 +46,7 @@ const configDespesas: ConfigCadastro = {
     { nome: 'descricao', rotulo: 'Descrição', tipo: 'texto', obrigatorio: true, placeholder: 'Conta de energia de outubro' },
     { nome: 'categoria', rotulo: 'Categoria', tipo: 'opcoes', largura: 'metade', opcoes: [{ valor: '', rotulo: '—' }, ...categoriasDespesa.map((c) => ({ valor: c, rotulo: c }))] },
     { nome: 'valorCentavos', rotulo: 'Valor', tipo: 'dinheiro', obrigatorio: true, largura: 'metade' },
-    { nome: 'data', rotulo: 'Data', tipo: 'data', largura: 'metade' },
+    { nome: 'data', rotulo: 'Data', tipo: 'data', largura: 'metade', padrao: 'hoje' },
     { nome: 'pago', rotulo: 'Situação', tipo: 'booleano', largura: 'metade', placeholder: 'Já foi paga' },
   ],
 };

@@ -17,6 +17,8 @@ const envSchema = z.object({
   TZ: z.string().default('America/Sao_Paulo'),
   // pasta dos backups automáticos (pode ser uma pasta sincronizada com o Google Drive)
   BACKUP_DIR: z.string().optional(),
+  // pasta das fotos (procedimentos, produtos, ferramentas); padrão: imagens/ na raiz do projeto
+  IMAGENS_DIR: z.string().optional(),
   BACKUP_MANTER: z.coerce.number().int().min(1).default(30),
   BACKUP_AUTOMATICO: z.stringbool().default(true),
 });

@@ -8,6 +8,7 @@ import * as produtoService from '../services/produtoService.js';
 import * as servicoService from '../services/servicoService.js';
 import * as procedimentoService from '../services/procedimentoService.js';
 import * as despesaService from '../services/despesaService.js';
+import * as ferramentaService from '../services/ferramentaService.js';
 import { prisma } from '../lib/prisma.js';
 
 export async function veiculoRoutes(app: FastifyInstance) {
@@ -49,4 +50,9 @@ export async function empresaRoutes(app: FastifyInstance) {
     const data = s.empresaUpdate.parse(req.body);
     return prisma.empresa.upsert({ where: { id: 1 }, update: data, create: data });
   });
+}
+
+export async function ferramentaRoutes(app: FastifyInstance) {
+  app.get('/resumo', async () => ferramentaService.resumo());
+  registrarCrud(app, ferramentaService, { create: s.ferramentaCreate, update: s.ferramentaUpdate, list: s.ferramentaList });
 }

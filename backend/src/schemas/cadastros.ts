@@ -3,6 +3,7 @@ import { dataLocal, listQuery, parcial, somenteDigitos, textoOpcional } from './
 import { centavos } from './itens.js';
 
 const idOpcional = z.number().int().positive().nullish();
+const imagemId = z.string().regex(/^[a-f0-9]{32}$/, 'Imagem inválida');
 
 // Placa antiga (ABC1234) ou Mercosul (ABC1D23); aceita com hífen/minúsculas.
 const placa = z
@@ -44,6 +45,7 @@ const produtoBase = z.object({
   precoVendaCentavos: centavos.default(0),
   estoqueMinimo: z.number().min(0).default(0),
   ativo: z.boolean().default(true),
+  imagemId: imagemId.nullish(),
 });
 export const produtoCreate = produtoBase.extend({ estoqueAtual: z.number().min(0).default(0) });
 // estoque só muda por entrada, ajuste ou venda, para manter o histórico
@@ -80,8 +82,33 @@ export const procedimentoCreate = z.object({
   solucaoAplicada: textoOpcional,
   esquemaEletricoAnotacoes: textoOpcional,
   tags: textoOpcional,
+  // fotos na ordem em que aparecem, cada uma com legenda opcional
+  imagens: z.array(z.object({ id: imagemId, legenda: textoOpcional })).max(30, 'No máximo 30 fotos').optional(),
 });
 export const procedimentoUpdate = parcial(procedimentoCreate);
+
+export const estadosFerramenta = ['NOVA', 'BOA', 'MANUTENCAO', 'DESCARTADA'] as const;
+export const ferramentaCreate = z.object({
+  nome: z.string().trim().min(1, 'Nome é obrigatório'),
+  marca: textoOpcional,
+  modelo: textoOpcional,
+  categoria: textoOpcional,
+  numeroSerie: textoOpcional,
+  quantidade: z.number().int().min(1, 'Quantidade mínima é 1').default(1),
+  valorCompraCentavos: centavos.default(0),
+  dataCompra: dataLocal.nullish(),
+  ondeComprou: textoOpcional,
+  garantiaAte: dataLocal.nullish(),
+  localizacao: textoOpcional,
+  estado: z.enum(estadosFerramenta).default('BOA'),
+  observacoes: textoOpcional,
+  imagemId: imagemId.nullish(),
+});
+export const ferramentaUpdate = parcial(ferramentaCreate);
+export const ferramentaList = listQuery.extend({
+  categoria: z.string().optional(),
+  incluirDescartadas: z.stringbool().optional(),
+});
 
 export const despesaCreate = z.object({
   descricao: z.string().trim().min(1, 'Descrição é obrigatória'),
@@ -118,5 +145,8 @@ export type ServicoCreate = z.infer<typeof servicoCreate>;
 export type ServicoUpdate = z.infer<typeof servicoUpdate>;
 export type ProcedimentoCreate = z.infer<typeof procedimentoCreate>;
 export type ProcedimentoUpdate = z.infer<typeof procedimentoUpdate>;
+export type FerramentaCreate = z.infer<typeof ferramentaCreate>;
+export type FerramentaUpdate = z.infer<typeof ferramentaUpdate>;
+export type FerramentaList = z.infer<typeof ferramentaList>;
 export type DespesaCreate = z.infer<typeof despesaCreate>;
 export type DespesaUpdate = z.infer<typeof despesaUpdate>;

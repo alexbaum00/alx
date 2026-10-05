@@ -16,6 +16,7 @@ import { Seletor } from '@/components/ui/Seletor';
 import { Campo, CampoDinheiro, CampoQuantidade, Input, lerNumero } from '@/components/ui/Campos';
 import { CabecalhoPagina, CampoBusca, tdTabela, thTabela } from '@/components/ui/Pagina';
 import { useAviso } from '@/components/ui/Toast';
+import { IconeProduto } from '@/components/ui/IconeProduto';
 
 interface ProdutoEstoque {
   id: number;
@@ -28,6 +29,7 @@ interface ProdutoEstoque {
   precoCustoCentavos: number;
   precoVendaCentavos: number;
   estoqueBaixo: boolean;
+  imagemId: string | null;
 }
 
 interface Movimentacao {
@@ -107,8 +109,13 @@ export function Estoque({ entrada }: { entrada?: boolean }) {
                   {data.itens.map((p) => (
                     <tr key={p.id} onClick={() => setAcao({ tipo: 'historico', produto: p })} className="cursor-pointer hover:bg-card-hover">
                       <td className={tdTabela}>
-                        <span className="block text-texto">{p.nome}</span>
-                        <span className="text-xs text-apagado">{[p.categoria, p.sku].filter(Boolean).join(' · ')}</span>
+                        <span className="flex items-center gap-3">
+                          <IconeProduto nome={p.nome} categoria={p.categoria} imagemId={p.imagemId} tamanho="size-9" />
+                          <span>
+                            <span className="block text-texto">{p.nome}</span>
+                            <span className="text-xs text-apagado">{[p.categoria, p.sku].filter(Boolean).join(' · ')}</span>
+                          </span>
+                        </span>
                       </td>
                       <td className={`${tdTabela} text-right whitespace-nowrap`}>
                         <span className="inline-flex items-center gap-2">

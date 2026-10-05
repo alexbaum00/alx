@@ -20,6 +20,8 @@ export type TipoCampo =
   | 'dinheiro'
   | 'booleano'
   | 'data'
+  | 'foto'
+  | 'fotos'
   | 'opcoes'
   | 'relacao';
 

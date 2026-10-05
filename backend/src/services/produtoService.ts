@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { AppError, NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
+import { validarImagensLivres } from '../lib/imagens.js';
 import type { ProdutoCreate, ProdutoUpdate } from '../schemas/cadastros.js';
 
 const estoqueBaixoWhere: Prisma.ProdutoWhereInput = {
@@ -70,6 +71,7 @@ async function validarFornecedor(fornecedorId: number | null | undefined) {
 
 export async function criar({ estoqueAtual, ...data }: ProdutoCreate) {
   await validarFornecedor(data.fornecedorId);
+  if (data.imagemId) await validarImagensLivres(prisma, [data.imagemId], {});
   return prisma.produto.create({
     data: {
       ...data,
@@ -86,6 +88,7 @@ export async function criar({ estoqueAtual, ...data }: ProdutoCreate) {
 export async function atualizar(id: number, data: ProdutoUpdate) {
   await buscarPorId(id);
   await validarFornecedor(data.fornecedorId);
+  if (data.imagemId) await validarImagensLivres(prisma, [data.imagemId], { produtoId: id });
   return prisma.produto.update({ where: { id }, data });
 }
 

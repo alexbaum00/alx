@@ -25,7 +25,7 @@ describe('backup', () => {
     await prisma.cliente.create({ data: { nome: 'Cliente do backup' } });
     for (let i = 0; i < 4; i++) await fazerBackup(pasta, 3);
 
-    const arquivos = readdirSync(pasta);
+    const arquivos = readdirSync(pasta).filter((a) => a.endsWith('.db'));
     expect(arquivos).toHaveLength(3);
     expect(listarBackups(pasta)).toHaveLength(3);
 

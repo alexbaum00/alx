@@ -12,9 +12,11 @@ export async function limparBanco() {
     prisma.veiculo.deleteMany(),
     prisma.cliente.deleteMany(),
     prisma.produto.deleteMany(),
+    prisma.ferramenta.deleteMany(),
     prisma.fornecedor.deleteMany(),
     prisma.servico.deleteMany(),
     prisma.despesa.deleteMany(),
+    prisma.imagem.deleteMany(),
     prisma.sessao.deleteMany(),
     prisma.acesso.deleteMany(),
   ]);

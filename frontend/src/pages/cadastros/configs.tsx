@@ -1,6 +1,7 @@
 import { MessageCircle } from 'lucide-react';
 import type { ConfigCadastro, Valores } from '@/components/cadastro/tipos';
 import { Badge } from '@/components/ui/Badge';
+import { IconeProduto } from '@/components/ui/IconeProduto';
 import { buscarClientes, buscarFornecedores, buscarVeiculos } from '@/lib/buscas';
 import { formatarMoeda, formatarPlaca, formatarQuantidade } from '@/lib/formato';
 
@@ -149,6 +150,7 @@ export const configProdutos: ConfigCadastro = {
   placeholderBusca: 'Buscar por nome, código ou categoria…',
   parametrosLista: 'incluirInativos=true', // inativos aparecem riscados para poder reativar
   campos: [
+    { nome: 'imagemId', rotulo: 'Foto', tipo: 'foto', ajuda: 'Aparece no lugar do ícone nas listas' },
     { nome: 'nome', rotulo: 'Nome', tipo: 'texto', obrigatorio: true },
     { nome: 'sku', rotulo: 'Código / código de barras', tipo: 'texto', largura: 'metade' },
     { nome: 'categoria', rotulo: 'Categoria', tipo: 'opcoes', largura: 'metade', opcoes: [{ valor: '', rotulo: '—' }, ...categorias.map((c) => ({ valor: c, rotulo: c }))] },
@@ -187,9 +189,12 @@ export const configProdutos: ConfigCadastro = {
     {
       titulo: 'Produto',
       render: (p) => (
-        <span className="flex flex-col">
-          <span className={`font-medium ${p.ativo ? 'text-white' : 'text-apagado line-through'}`}>{s(p.nome)}</span>
-          <span className="text-xs text-apagado">{[p.categoria, p.sku].filter(Boolean).join(' · ')}</span>
+        <span className="flex items-center gap-3">
+          <IconeProduto nome={s(p.nome)} categoria={p.categoria as string | null} imagemId={p.imagemId as string | null} tamanho="size-9" />
+          <span className="flex flex-col">
+            <span className={`font-medium ${p.ativo ? 'text-white' : 'text-apagado line-through'}`}>{s(p.nome)}</span>
+            <span className="text-xs text-apagado">{[p.categoria, p.sku].filter(Boolean).join(' · ')}</span>
+          </span>
         </span>
       ),
     },
@@ -259,6 +264,7 @@ export const configProcedimentos: ConfigCadastro = {
     { nome: 'solucaoAplicada', rotulo: 'Solução aplicada', tipo: 'textarea' },
     { nome: 'esquemaEletricoAnotacoes', rotulo: 'Esquema elétrico / anotações', tipo: 'textarea', placeholder: 'Pinagem de chicote, cores de fio, códigos de erro, macetes…' },
     { nome: 'tags', rotulo: 'Palavras-chave', tipo: 'texto', placeholder: 'bateria, consumo parasita, rádio', ajuda: 'Separadas por vírgula' },
+    { nome: 'imagens', rotulo: 'Fotos', tipo: 'fotos', ajuda: 'Chicote, conector, esquema… Tire na hora pelo celular ou escolha da galeria.' },
   ],
   colunas: [],
 };

@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { env } from '../config/env.js';
 import { prisma } from './prisma.js';
+import { limparImagensOrfas, pastaImagens } from './imagens.js';
 
 const PADRAO_NOME = /^alx-\d{8}-\d{6}(-\d+)?\.db$/;
 const DIA_MS = 24 * 60 * 60 * 1000;
@@ -36,12 +37,35 @@ export async function fazerBackup(pasta = pastaBackup(), manter = env.BACKUP_MAN
   for (let n = 2; existsSync(destino); n++) destino = resolve(pasta, `${base}-${n}.db`);
   await prisma.$executeRawUnsafe(`VACUUM INTO '${destino.replace(/'/g, "''")}'`);
   for (const antigo of listarBackups(pasta).slice(manter)) rmSync(resolve(pasta, antigo.arquivo), { force: true });
+  copiarImagensNovas(resolve(pasta, 'imagens'));
   return destino;
 }
 
-// Verifica de hora em hora; faz backup se o último tem mais de 24 h (ou se não há nenhum).
+// As fotos nunca mudam (nome aleatório), então basta copiar as que ainda não estão no backup.
+// Fotos apagadas no sistema continuam no backup, por segurança.
+export function copiarImagensNovas(destino: string, origem = pastaImagens()) {
+  if (!existsSync(origem)) return 0;
+  mkdirSync(destino, { recursive: true });
+  let copiadas = 0;
+  for (const arquivo of readdirSync(origem)) {
+    const alvo = resolve(destino, arquivo);
+    if (!existsSync(alvo)) {
+      copyFileSync(resolve(origem, arquivo), alvo);
+      copiadas++;
+    }
+  }
+  return copiadas;
+}
+
+// De hora em hora: limpa fotos sem uso e faz backup se o último tem mais de 24 h (ou se não há nenhum).
 export function agendarBackups(log: { info: (m: string) => void; error: (e: unknown) => void }) {
   const verificar = async () => {
+    try {
+      const removidas = await limparImagensOrfas();
+      if (removidas) log.info(`${removidas} foto(s) sem uso apagada(s)`);
+    } catch (e) {
+      log.error(e);
+    }
     const ultimo = listarBackups()[0];
     if (ultimo && Date.now() - ultimo.data.getTime() < DIA_MS) return;
     try {

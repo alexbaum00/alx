@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Car, Loader2, Package, Search, User } from 'lucide-react';
 import { api, type ClienteResumo, type Pagina, type ProdutoResumo, type VeiculoResumo } from '@/lib/api';
 import { formatarPlaca, formatarQuantidade } from '@/lib/formato';
+import { IconeProduto } from '@/components/ui/IconeProduto';
 
 function useDebounce<T>(valor: T, ms: number) {
   const [atrasado, setAtrasado] = useState(valor);
@@ -86,7 +87,7 @@ export function BuscaGlobal() {
           </Grupo>
           <Grupo titulo="Peças" itens={data.produtos}>
             {(p) => (
-              <Resultado key={p.id} para={`/estoque?busca=${encodeURIComponent(p.nome)}`} onClick={fechar} icone={<Package className="size-4" />}>
+              <Resultado key={p.id} para={`/estoque?busca=${encodeURIComponent(p.nome)}`} onClick={fechar} icone={p.imagemId ? <IconeProduto nome={p.nome} imagemId={p.imagemId} tamanho="size-6" /> : <Package className="size-4" />}>
                 <span className="text-texto">{p.nome}</span>
                 <span className={`text-xs ${p.estoqueBaixo ? 'text-orange-400' : 'text-apagado'}`}>
                   {formatarQuantidade(p.estoqueAtual)} {p.unidade} em estoque

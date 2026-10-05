@@ -90,6 +90,15 @@ async function main() {
     },
   });
 
+  await prisma.ferramenta.createMany({
+    data: [
+      { nome: 'Scanner automotivo', marca: 'Launch', modelo: 'CRP 129', categoria: 'Diagnóstico', valorCompraCentavos: 189000, estado: 'BOA', localizacao: 'Bancada' },
+      { nome: 'Multímetro digital', marca: 'Minipa', modelo: 'ET-1002', categoria: 'Medição', valorCompraCentavos: 18900, quantidade: 2, estado: 'BOA', localizacao: 'Gaveta 1' },
+      { nome: 'Alicate amperímetro', marca: 'Fluke', modelo: '323', categoria: 'Medição', valorCompraCentavos: 89000, estado: 'NOVA', localizacao: 'Gaveta 1' },
+      { nome: 'Ferro de solda 60W', marca: 'Hikari', categoria: 'Elétricas', valorCompraCentavos: 9500, estado: 'BOA', localizacao: 'Bancada' },
+    ],
+  });
+
   await prisma.procedimento.create({
     data: {
       modeloVeiculo: 'VW Polo 1.6 2018',

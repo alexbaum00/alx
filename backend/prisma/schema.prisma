@@ -134,6 +134,9 @@ model Produto {
   estoqueAtual       Float                 @default(0)
   estoqueMinimo      Float                 @default(0)
   ativo              Boolean               @default(true)
+  // foto do produto, mostrada no lugar do ícone da categoria
+  imagemId           String?               @unique
+  imagem             Imagem?               @relation(fields: [imagemId], references: [id], onDelete: SetNull)
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
   itensVenda         ItemVenda[]
@@ -171,6 +174,7 @@ model Procedimento {
   solucaoAplicada          String?
   esquemaEletricoAnotacoes String? // pinagem de chicote, códigos de erro, macetes
   tags                     String? // palavras-chave separadas por vírgula
+  imagens                  Imagem[] // fotos de chicote, esquema, peça…
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
@@ -317,4 +321,47 @@ model Sessao {
   expiraEm     DateTime
 
   @@index([expiraEm])
+}
+
+// Foto enviada pelo sistema. O arquivo fica na pasta de imagens (IMAGENS_DIR);
+// aqui só os dados. Sem dono por mais de 24 h, é apagada pela limpeza automática.
+model Imagem {
+  id             String        @id // aleatório; também é o nome do arquivo
+  arquivo        String
+  mime           String
+  tamanhoBytes   Int
+  legenda        String?
+  ordem          Int           @default(0)
+  procedimentoId Int?
+  procedimento   Procedimento? @relation(fields: [procedimentoId], references: [id], onDelete: Cascade)
+  produto        Produto?
+  ferramenta     Ferramenta?
+  criadaEm       DateTime      @default(now())
+
+  @@index([procedimentoId])
+}
+
+// Ferramentas e equipamentos da oficina, para controle do que foi investido.
+model Ferramenta {
+  id                  Int       @id @default(autoincrement())
+  nome                String
+  marca               String?
+  modelo              String?
+  categoria           String? // Diagnóstico, Medição, Manuais, Elétricas, Bancada…
+  numeroSerie         String?
+  quantidade          Int       @default(1)
+  valorCompraCentavos Int       @default(0) // por unidade
+  dataCompra          DateTime?
+  ondeComprou         String?
+  garantiaAte         DateTime?
+  localizacao         String? // gaveta, bancada, carrinho…
+  estado              String    @default("BOA") // NOVA, BOA, MANUTENCAO, DESCARTADA
+  observacoes         String?
+  imagemId            String?   @unique
+  imagem              Imagem?   @relation(fields: [imagemId], references: [id], onDelete: SetNull)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([nome])
+  @@index([categoria])
 }

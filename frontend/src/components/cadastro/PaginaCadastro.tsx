@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -12,7 +12,8 @@ import { CabecalhoPagina, CampoBusca, tdTabela, thTabela } from '@/components/ui
 import { FormularioCadastro } from './FormularioCadastro';
 import type { ConfigCadastro, Valores } from './tipos';
 
-export function PaginaCadastro({ config, abrirNovo }: { config: ConfigCadastro; abrirNovo?: boolean }) {
+// "acima": conteúdo extra entre o título e a busca (ex.: resumo das ferramentas)
+export function PaginaCadastro({ config, abrirNovo, acima }: { config: ConfigCadastro; abrirNovo?: boolean; acima?: ReactNode }) {
   const { texto, setTexto, termo } = useBuscaNaUrl();
   const [pagina, setPagina] = useState(1);
   const [formulario, setFormulario] = useState<{ item: Valores | null } | null>(abrirNovo ? { item: null } : null);
@@ -44,6 +45,7 @@ export function PaginaCadastro({ config, abrirNovo }: { config: ConfigCadastro; 
           </Botao>
         }
       />
+      {acima}
       <div className="mb-3 flex gap-2">
         <CampoBusca valor={texto} onChange={setTexto} placeholder={config.placeholderBusca} />
       </div>

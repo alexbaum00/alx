@@ -52,6 +52,7 @@ export interface DashboardStats {
     estoqueAtual: number;
     estoqueMinimo: number;
     estoqueBaixo: boolean;
+    imagemId: string | null;
   }[];
   veiculosRecentes: {
     vendaId: number;
@@ -87,6 +88,7 @@ export interface ProdutoResumo {
   estoqueAtual: number;
   precoVendaCentavos: number;
   estoqueBaixo: boolean;
+  imagemId: string | null;
 }
 
 export type FormaPagamento = 'PIX' | 'DINHEIRO' | 'CARTAO_DEBITO' | 'CARTAO_CREDITO' | 'BOLETO' | 'OUTRO';

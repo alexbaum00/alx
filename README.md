@@ -47,10 +47,10 @@ Nada fica instalado no Windows (sem início automático, atalhos ou regra de fir
 
 ### Backup
 
-- **Automático, uma vez por dia**, guardando os últimos 30, na pasta `backups/`.
+- **Automático, uma vez por dia**, guardando os últimos 30, na pasta `backups/`. As **fotos** (procedimentos, produtos, ferramentas) vão junto, em `backups/imagens/`; só as novas são copiadas a cada vez.
 - Em **Configurações › Backup** dá para ver os últimos e clicar em **Fazer backup agora**.
 - Para guardar fora do computador, abra `backend/.env` no Bloco de Notas e aponte `BACKUP_DIR` para uma pasta do Google Drive, por exemplo `BACKUP_DIR="C:\Users\voce\Google Drive\ALX-backups"`. Ou copie a pasta `backups/` para um pen drive de vez em quando.
-- **Para restaurar:** feche o sistema, copie o backup escolhido para `backend\prisma\alx.db` (substituindo o arquivo) e inicie de novo.
+- **Para restaurar:** feche o sistema, copie o backup escolhido para `backend\prisma\alx.db` (substituindo o arquivo), copie o conteúdo de `backups\imagens\` para a pasta `imagens\` do sistema e inicie de novo.
 
 ### Esqueci a senha
 
@@ -64,7 +64,7 @@ Depois abra <http://localhost:3000> nesse computador e crie a senha nova. Todos 
 
 ### Atualizar o sistema
 
-Substitua os arquivos pela versão nova (sem apagar `backend\.env`, `backend\prisma\alx.db` nem `backups\`) e rode o `instalar.bat` de novo. As atualizações do banco são feitas por migrações, que **não apagam dados**.
+Substitua os arquivos pela versão nova (sem apagar `backend\.env`, `backend\prisma\alx.db`, `imagens\` nem `backups\`) e rode o `instalar.bat` de novo. As atualizações do banco são feitas por migrações, que **não apagam dados**.
 
 ---
 
@@ -111,5 +111,7 @@ Todas as rotas exigem login (cookie de sessão), exceto `/api/health` e `/api/au
 | Empresa | `GET/PUT /api/empresa` | dados da oficina e link do emissor de NF-e |
 | Relatórios | `GET /api/relatorios/financeiro`, `GET /api/relatorios/vendas` | `?de=AAAA-MM-DD&ate=AAAA-MM-DD` (padrão: mês atual) |
 | Sistema | `GET /api/sistema/acesso`, `GET/POST /api/sistema/backup` | endereços com QR code; backups |
+| Imagens | `POST /api/imagens` (corpo: bytes da foto), `GET /api/imagens/:id` | a foto é ligada ao registro por `imagemId` (produto, ferramenta) ou `imagens: [{id, legenda}]` (procedimento) |
+| Ferramentas | `/api/ferramentas` | `GET /resumo` (total investido, por categoria); `?incluirDescartadas=true` |
 
 Valores em dinheiro trafegam em centavos (`2500` = R$ 25,00).

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, Pencil, Plus, Search } from 'lucide-react';
+import { Camera, ChevronDown, Pencil, Plus, Search } from 'lucide-react';
 import { api, type Pagina } from '@/lib/api';
 import { formatarPlaca } from '@/lib/formato';
 import { Card } from '@/components/ui/Card';
 import { Carregando, Erro, Vazio } from '@/components/ui/Estados';
 import { Botao } from '@/components/ui/Botao';
+import { Galeria } from '@/components/ui/Fotos';
 import { FormularioCadastro } from '@/components/cadastro/FormularioCadastro';
 import { configProcedimentos } from './cadastros/configs';
 
@@ -18,6 +19,7 @@ interface Procedimento {
   solucaoAplicada: string | null;
   esquemaEletricoAnotacoes: string | null;
   tags: string | null;
+  imagens: { id: string; legenda: string | null }[];
   updatedAt: string;
   veiculo: { id: number; placa: string; modelo: string } | null;
 }
@@ -102,7 +104,14 @@ function ItemProcedimento({ p, abertoInicial, onEditar }: { p: Procedimento; abe
             {p.modeloVeiculo}
             {p.veiculo && <span className="ml-2 font-mono text-apagado">{formatarPlaca(p.veiculo.placa)}</span>}
           </span>
-          <span className="mt-0.5 block font-medium text-white">{p.defeitoReclamado}</span>
+          <span className="mt-0.5 flex items-center gap-2 font-medium text-white">
+            {p.defeitoReclamado}
+            {p.imagens.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-normal text-suave" title={`${p.imagens.length} foto(s)`}>
+                <Camera className="size-3" /> {p.imagens.length}
+              </span>
+            )}
+          </span>
           {!aberto && p.solucaoAplicada && <span className="mt-1 block truncate text-sm text-suave">{p.solucaoAplicada}</span>}
         </span>
         <ChevronDown className={`mt-1 size-5 shrink-0 text-apagado transition-transform ${aberto ? 'rotate-180' : ''}`} />
@@ -112,6 +121,14 @@ function ItemProcedimento({ p, abertoInicial, onEditar }: { p: Procedimento; abe
           <Campo titulo="Diagnóstico" texto={p.diagnosticoEncontrado} />
           <Campo titulo="Solução aplicada" texto={p.solucaoAplicada} />
           <Campo titulo="Esquema elétrico / anotações" texto={p.esquemaEletricoAnotacoes} destaque />
+          {p.imagens.length > 0 && (
+            <div>
+              <dt className="mb-1.5 text-xs font-medium text-apagado">Fotos</dt>
+              <dd>
+                <Galeria fotos={p.imagens} />
+              </dd>
+            </div>
+          )}
           <div className="flex justify-end">
             <Botao variante="secundario" tamanho="sm" icone={<Pencil className="size-3.5" />} onClick={onEditar}>
               Editar

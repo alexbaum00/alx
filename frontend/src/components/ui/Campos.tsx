@@ -22,7 +22,11 @@ export function Campo({ rotulo, erro, ajuda, obrigatorio, children, className = 
     <div className={className}>
       <label htmlFor={id} className="mb-1 block text-xs font-medium text-suave">
         {rotulo}
-        {obrigatorio && <span className="ml-0.5 text-laranja">*</span>}
+        {obrigatorio && (
+          <span className="ml-0.5 text-laranja" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       {filho}
       {erro ? <p className="mt-1 text-xs text-red-400">{erro}</p> : ajuda && <p className="mt-1 text-xs text-apagado">{ajuda}</p>}

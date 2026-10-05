@@ -5,6 +5,7 @@ import { Cadastros } from '@/pages/cadastros/Inicio';
 import { Procedimentos } from '@/pages/Procedimentos';
 import { EmBreve } from '@/pages/EmBreve';
 import { Clientes, Fornecedores, Produtos, Servicos, Veiculos } from '@/pages/cadastros';
+import { Ferramentas } from '@/pages/cadastros/Ferramentas';
 import { Vendas } from '@/pages/vendas/Vendas';
 import { DetalheVenda } from '@/pages/vendas/DetalheVenda';
 import { EditarVenda, NovaVenda } from '@/pages/vendas/FormularioVenda';
@@ -43,6 +44,8 @@ export function App() {
         <Route path="cadastros/produtos/novo" element={<Produtos novo />} />
         <Route path="cadastros/servicos" element={<Servicos />} />
         <Route path="cadastros/servicos/novo" element={<Servicos novo />} />
+        <Route path="cadastros/ferramentas" element={<Ferramentas />} />
+        <Route path="cadastros/ferramentas/novo" element={<Ferramentas novo />} />
 
         <Route path="estoque" element={<Estoque />} />
         <Route path="estoque/entrada" element={<Estoque entrada />} />

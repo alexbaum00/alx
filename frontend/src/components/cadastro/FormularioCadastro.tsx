@@ -7,6 +7,7 @@ import { Botao } from '@/components/ui/Botao';
 import { Confirmar } from '@/components/ui/Confirmar';
 import { Campo, CampoDinheiro, CampoQuantidade, Input, Select, Textarea, lerNumero } from '@/components/ui/Campos';
 import { Seletor } from '@/components/ui/Seletor';
+import { CampoFoto, CampoFotos, type FotoValor } from '@/components/ui/Fotos';
 import { useAviso } from '@/components/ui/Toast';
 import type { CampoDef, ConfigCadastro, Relacao, Valores } from './tipos';
 
@@ -15,7 +16,9 @@ function valorInicial(c: CampoDef, item: Valores | null): unknown {
   const v = item?.[c.nome];
   if (c.tipo === 'dinheiro') return (v as number | undefined) ?? (c.padrao as number) ?? 0;
   if (c.tipo === 'booleano') return (v as boolean | undefined) ?? (c.padrao as boolean) ?? true;
-  if (c.tipo === 'data') return v ? new Date(v as string).toLocaleDateString('sv-SE') : String(c.padrao ?? new Date().toLocaleDateString('sv-SE'));
+  if (c.tipo === 'data') return v ? new Date(v as string).toLocaleDateString('sv-SE') : c.padrao === 'hoje' ? new Date().toLocaleDateString('sv-SE') : '';
+  if (c.tipo === 'foto') return (item?.imagemId as string | null) ?? null;
+  if (c.tipo === 'fotos') return ((item?.imagens as FotoValor[] | undefined) ?? []).map((f) => ({ id: f.id, legenda: f.legenda ?? '' }));
   if (c.tipo === 'numero') return v != null ? String(v).replace('.', ',') : String(c.padrao ?? '');
   return v != null ? String(v) : String(c.padrao ?? '');
 }
@@ -32,7 +35,12 @@ function paraApi(c: CampoDef, v: unknown): unknown {
     case 'numero':
       return v === '' ? 0 : lerNumero(String(v));
     case 'data':
-      return v || undefined;
+      // campo vazio: limpa a data (ou deixa o servidor usar o padrão, se o campo tem um)
+      return v || (c.padrao === 'hoje' ? undefined : null);
+    case 'foto':
+      return v ?? null;
+    case 'fotos':
+      return (v as FotoValor[]).map((f) => ({ id: f.id, legenda: f.legenda?.trim() || null }));
     default:
       return String(v ?? '').trim();
   }
@@ -171,6 +179,10 @@ function EntradaCampo({ campo: c, valor, onChange }: { campo: CampoDef; valor: u
       return <CampoQuantidade id={id} valor={texto} onChange={onChange} />;
     case 'data':
       return <Input id={id} type="date" value={texto} onChange={(e) => onChange(e.target.value)} />;
+    case 'foto':
+      return <CampoFoto id={id} valor={valor as string | null} onChange={onChange} />;
+    case 'fotos':
+      return <CampoFotos id={id} valor={valor as FotoValor[]} onChange={onChange} />;
     case 'inteiro':
       return <Input id={id} inputMode="numeric" value={texto} placeholder={c.placeholder} onChange={(e) => onChange(e.target.value.replace(/\D/g, ''))} />;
     case 'booleano':

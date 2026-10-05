@@ -98,7 +98,18 @@ Sessões valem 30 dias e são renovadas com o uso. O cookie não tem a flag `Sec
 - `iniciar.bat` roda `npm start`.
 - `.gitattributes` mantém CRLF nos `.bat`/`.ps1`; o `.ps1` é salvo em UTF-8 com BOM para o PowerShell 5.1 ler os acentos.
 
+## Fotos e ferramentas
+
+- **Fotos como arquivos** na pasta `imagens/` (`IMAGENS_DIR`), com o registro no modelo `Imagem`. Ficar fora do SQLite evita que cada backup diário copie todas as fotos de novo; o backup copia só as fotos novas para `backups/imagens/`.
+- **Redução no navegador** (canvas, JPEG): até 1600 px em procedimentos e 900 px em produtos e ferramentas. Uma foto de celular de ~500 KB a 4 MB vira dezenas ou poucas centenas de KB. Sem biblioteca nativa (como sharp), que costuma dar problema de instalação no Windows.
+- **Envio antes de salvar**: a foto sobe ao ser escolhida e o formulário manda só o id ao salvar. Fotos sem dono (formulário cancelado, foto trocada ou removida) são apagadas pela manutenção de hora em hora depois de 24 h, assim como arquivos que ficaram sem registro.
+- **Segurança**: o tipo é conferido pelos primeiros bytes (JPEG, PNG, WebP), não pelo cabeçalho; ids são 32 caracteres hexadecimais aleatórios, validados antes de tocar no disco; a rota exige login; uma foto não pode pertencer a dois registros.
+- **Produto**: uma foto (`Produto.imagemId`), mostrada no lugar do ícone da categoria no painel, no Estoque, em Produtos e na busca do topo.
+- **Procedimento**: até 30 fotos com legenda e ordem; galeria com ampliação (setas, teclado, deslizar no celular).
+- **Ferramentas** (Cadastros › Ferramentas): valor por unidade × quantidade; o resumo soma o investido sem as descartadas, por categoria, e conta as em manutenção e na garantia.
+
 ## Pendências conhecidas
 
 - Scripts de Windows escritos e revisados, mas não executados num Windows real durante o desenvolvimento.
 - PWA instalável só com HTTPS (nuvem, mkcert ou túnel).
+- **Busca não ignora acentos**: o `LIKE` do SQLite só ignora maiúsculas/minúsculas em letras sem acento, então "rele" não acha "Relé" e "multi" não acha "Multímetro". Solução prevista: guardar uma versão normalizada (minúsculas, sem acento) dos campos pesquisáveis e buscar nela.

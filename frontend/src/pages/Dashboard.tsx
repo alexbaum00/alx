@@ -1,24 +1,18 @@
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import {
-  BatteryFull,
   Box,
-  Cable,
   Car,
   ChartColumn,
   Ellipsis,
   FilePlus,
   FileText,
-  Lightbulb,
   PackagePlus,
-  PackageOpen,
   ShieldCheck,
   ShoppingCart,
-  ToggleRight,
   TriangleAlert,
   UserPlus,
   Wrench,
-  Zap,
   type LucideIcon,
 } from 'lucide-react';
 import { api, type DashboardStats } from '@/lib/api';
@@ -26,6 +20,7 @@ import { formatarDataHora, formatarMoeda, formatarPlaca, formatarQuantidade } fr
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Badge, BadgeStatusVenda } from '@/components/ui/Badge';
 import { Carregando, Erro, Vazio } from '@/components/ui/Estados';
+import { IconeProduto } from '@/components/ui/IconeProduto';
 
 export function Dashboard() {
   const { data, isPending, error, refetch } = useQuery({
@@ -117,24 +112,6 @@ function VendasRecentes({ vendas }: { vendas: DashboardStats['vendasRecentes'] }
   );
 }
 
-const iconesCategoria: [RegExp, LucideIcon, string][] = [
-  [/l[aâ]mpada|farol/i, Lightbulb, 'text-yellow-300'],
-  [/fus[ií]vel/i, Zap, 'text-red-400'],
-  [/rel[eé]/i, ToggleRight, 'text-slate-300'],
-  [/bateria/i, BatteryFull, 'text-emerald-400'],
-  [/cabo|fio/i, Cable, 'text-red-400'],
-];
-
-function IconeProduto({ categoria, nome }: { categoria: string | null; nome: string }) {
-  const achado = iconesCategoria.find(([re]) => re.test(categoria ?? '') || re.test(nome));
-  const [, Icone, cor] = achado ?? [null, PackageOpen, 'text-suave'];
-  return (
-    <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-slate-800">
-      <Icone className={`size-4 ${cor}`} />
-    </span>
-  );
-}
-
 function ProdutosEstoque({ produtos }: { produtos: DashboardStats['produtosEstoque'] }) {
   return (
     <Card>
@@ -156,7 +133,7 @@ function ProdutosEstoque({ produtos }: { produtos: DashboardStats['produtosEstoq
                 <tr key={p.id} className="hover:bg-card-hover">
                   <td className={td}>
                     <span className="flex items-center gap-3">
-                      <IconeProduto categoria={p.categoria} nome={p.nome} />
+                      <IconeProduto categoria={p.categoria} nome={p.nome} imagemId={p.imagemId} />
                       <span className="truncate">{p.nome}</span>
                     </span>
                   </td>
