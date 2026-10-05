@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { somenteDigitos, textoOpcional } from './common.js';
+import { parcial, somenteDigitos, textoOpcional } from './common.js';
 
 export const clienteCreate = z.object({
   nome: z.string().trim().min(1, 'Nome é obrigatório'),
@@ -19,7 +19,7 @@ export const clienteCreate = z.object({
   observacoes: textoOpcional,
 });
 
-export const clienteUpdate = clienteCreate.partial();
+export const clienteUpdate = parcial(clienteCreate);
 
 export type ClienteCreate = z.infer<typeof clienteCreate>;
 export type ClienteUpdate = z.infer<typeof clienteUpdate>;

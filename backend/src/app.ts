@@ -5,6 +5,16 @@ import { ZodError } from 'zod';
 import { AppError } from './lib/errors.js';
 import { healthRoutes } from './routes/health.js';
 import { clienteRoutes } from './routes/clientes.js';
+import {
+  despesaRoutes,
+  empresaRoutes,
+  fornecedorRoutes,
+  procedimentoRoutes,
+  produtoRoutes,
+  servicoRoutes,
+  veiculoRoutes,
+} from './routes/cadastros.js';
+import { dashboardRoutes, orcamentoRoutes, vendaRoutes } from './routes/vendas.js';
 
 export async function buildApp(opts: FastifyServerOptions = {}) {
   const app = Fastify(opts);
@@ -36,7 +46,17 @@ export async function buildApp(opts: FastifyServerOptions = {}) {
   });
 
   await app.register(healthRoutes, { prefix: '/api/health' });
+  await app.register(dashboardRoutes, { prefix: '/api/dashboard' });
   await app.register(clienteRoutes, { prefix: '/api/clientes' });
+  await app.register(veiculoRoutes, { prefix: '/api/veiculos' });
+  await app.register(fornecedorRoutes, { prefix: '/api/fornecedores' });
+  await app.register(produtoRoutes, { prefix: '/api/produtos' });
+  await app.register(servicoRoutes, { prefix: '/api/servicos' });
+  await app.register(procedimentoRoutes, { prefix: '/api/procedimentos' });
+  await app.register(vendaRoutes, { prefix: '/api/vendas' });
+  await app.register(orcamentoRoutes, { prefix: '/api/orcamentos' });
+  await app.register(despesaRoutes, { prefix: '/api/despesas' });
+  await app.register(empresaRoutes, { prefix: '/api/empresa' });
 
   return app;
 }

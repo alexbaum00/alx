@@ -69,6 +69,27 @@ async function main() {
     });
   }
 
+  // Orçamento avulso para alguém que ainda não é cliente
+  const bateria = produtos[3];
+  const troca = await prisma.servico.findFirstOrThrow({ where: { nome: 'Troca de bateria' } });
+  await prisma.orcamento.create({
+    data: {
+      nomeContato: 'Ricardo Gomes',
+      telefoneContato: '(11) 97777-1234',
+      descricaoVeiculo: 'Honda Civic 2015',
+      validadeAte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      totalProdutosCentavos: bateria.precoVendaCentavos,
+      totalServicosCentavos: troca.precoCentavos,
+      valorTotalCentavos: bateria.precoVendaCentavos + troca.precoCentavos,
+      itens: {
+        create: [
+          { tipo: 'PRODUTO', produtoId: bateria.id, descricao: bateria.nome, quantidade: 1, valorUnitarioCentavos: bateria.precoVendaCentavos, valorTotalCentavos: bateria.precoVendaCentavos },
+          { tipo: 'SERVICO', servicoId: troca.id, descricao: troca.nome, quantidade: 1, valorUnitarioCentavos: troca.precoCentavos, valorTotalCentavos: troca.precoCentavos },
+        ],
+      },
+    },
+  });
+
   await prisma.procedimento.create({
     data: {
       modeloVeiculo: 'VW Polo 1.6 2018',

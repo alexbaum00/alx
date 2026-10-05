@@ -13,11 +13,17 @@ datasource db {
 }
 
 enum StatusVenda {
-  ORCAMENTO
   ABERTO
   CONCLUIDO
   PAGO
   CANCELADO
+}
+
+enum StatusOrcamento {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  CONVERTIDO
 }
 
 enum FormaPagamento {
@@ -57,9 +63,9 @@ model Empresa {
 }
 
 model Cliente {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   nome        String
-  cpfCnpj     String?   @unique
+  cpfCnpj     String?     @unique
   telefone    String?
   email       String?
   cep         String?
@@ -70,10 +76,11 @@ model Cliente {
   cidade      String?
   uf          String?
   observacoes String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   veiculos    Veiculo[]
   vendas      Venda[]
+  orcamentos  Orcamento[]
 
   @@index([nome])
 }
@@ -91,6 +98,7 @@ model Veiculo {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   vendas        Venda[]
+  orcamentos    Orcamento[]
   procedimentos Procedimento[]
 
   @@index([clienteId])
@@ -112,21 +120,22 @@ model Fornecedor {
 }
 
 model Produto {
-  id                 Int                    @id @default(autoincrement())
+  id                 Int                   @id @default(autoincrement())
   fornecedorId       Int?
-  fornecedor         Fornecedor?            @relation(fields: [fornecedorId], references: [id], onDelete: SetNull)
-  sku                String?                @unique // código de barras ou código interno
+  fornecedor         Fornecedor?           @relation(fields: [fornecedorId], references: [id], onDelete: SetNull)
+  sku                String?               @unique // código de barras ou código interno
   nome               String
   categoria          String? // Lâmpadas, Relés, Baterias, Cabos...
-  unidade            String                 @default("un") // un, m, par, kit
-  precoCustoCentavos Int                    @default(0)
-  precoVendaCentavos Int                    @default(0)
-  estoqueAtual       Float                  @default(0)
-  estoqueMinimo      Float                  @default(0)
-  ativo              Boolean                @default(true)
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+  unidade            String                @default("un") // un, m, par, kit
+  precoCustoCentavos Int                   @default(0)
+  precoVendaCentavos Int                   @default(0)
+  estoqueAtual       Float                 @default(0)
+  estoqueMinimo      Float                 @default(0)
+  ativo              Boolean               @default(true)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
   itensVenda         ItemVenda[]
+  itensOrcamento     ItemOrcamento[]
   movimentacoes      MovimentacaoEstoque[]
 
   @@index([nome])
@@ -135,15 +144,16 @@ model Produto {
 
 // Catálogo de mão de obra (tela "Serviços"): itens com preço sugerido.
 model Servico {
-  id                  Int         @id @default(autoincrement())
-  nome                String
-  descricao           String?
-  precoCentavos       Int         @default(0)
-  tempoEstimadoMin    Int?
-  ativo               Boolean     @default(true)
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  itensVenda          ItemVenda[]
+  id               Int             @id @default(autoincrement())
+  nome             String
+  descricao        String?
+  precoCentavos    Int             @default(0)
+  tempoEstimadoMin Int?
+  ativo            Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  itensVenda       ItemVenda[]
+  itensOrcamento   ItemOrcamento[]
 
   @@index([nome])
 }
@@ -165,7 +175,7 @@ model Procedimento {
   @@index([modeloVeiculo])
 }
 
-// Venda / Ordem de Serviço. Um orçamento é uma venda com status ORCAMENTO.
+// Venda / Ordem de Serviço. Lançada direto, sem depender de orçamento.
 model Venda {
   id                    Int                   @id @default(autoincrement())
   clienteId             Int?
@@ -187,6 +197,7 @@ model Venda {
   updatedAt             DateTime              @updatedAt
   itens                 ItemVenda[]
   movimentacoes         MovimentacaoEstoque[]
+  orcamento             Orcamento? // preenchido só quando a venda nasceu de um orçamento
 
   @@index([data])
   @@index([status])
@@ -208,6 +219,53 @@ model ItemVenda {
   valorTotalCentavos    Int
 
   @@index([vendaId])
+}
+
+// Orçamento: módulo à parte, para quando o cliente pede preço antes de fechar.
+// Não mexe em estoque nem entra no faturamento; pode ser convertido em venda.
+model Orcamento {
+  id                    Int             @id @default(autoincrement())
+  clienteId             Int?
+  cliente               Cliente?        @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  veiculoId             Int?
+  veiculo               Veiculo?        @relation(fields: [veiculoId], references: [id], onDelete: SetNull)
+  // para quem ainda não é cliente cadastrado
+  nomeContato           String?
+  telefoneContato       String?
+  descricaoVeiculo      String?
+  data                  DateTime        @default(now())
+  validadeAte           DateTime?
+  status                StatusOrcamento @default(PENDENTE)
+  descontoCentavos      Int             @default(0)
+  totalProdutosCentavos Int             @default(0)
+  totalServicosCentavos Int             @default(0)
+  valorTotalCentavos    Int             @default(0)
+  observacoes           String?
+  vendaId               Int?            @unique
+  venda                 Venda?          @relation(fields: [vendaId], references: [id], onDelete: SetNull)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  itens                 ItemOrcamento[]
+
+  @@index([data])
+  @@index([status])
+}
+
+model ItemOrcamento {
+  id                    Int       @id @default(autoincrement())
+  orcamentoId           Int
+  orcamento             Orcamento @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  tipo                  TipoItem
+  produtoId             Int?
+  produto               Produto?  @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+  servicoId             Int?
+  servico               Servico?  @relation(fields: [servicoId], references: [id], onDelete: SetNull)
+  descricao             String
+  quantidade            Float     @default(1)
+  valorUnitarioCentavos Int
+  valorTotalCentavos    Int
+
+  @@index([orcamentoId])
 }
 
 // Histórico de entradas e saídas (atalho "Entrada no Estoque" e baixas de venda).

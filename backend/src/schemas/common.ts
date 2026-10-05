@@ -16,3 +16,15 @@ export const textoOpcional = z
   .nullish();
 
 export const somenteDigitos = (v: string | null | undefined) => (v ? v.replace(/\D/g, '') || null : v);
+
+// Versão para edição (PUT): todos os campos opcionais e SEM valores padrão.
+// No Zod 4, .partial() manteria os .default() e um PUT parcial zeraria preços, desconto etc.
+export function parcial<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
+  const shape = Object.fromEntries(
+    Object.entries(schema.shape).map(([campo, tipo]) => [
+      campo,
+      ((tipo instanceof z.ZodDefault ? tipo.unwrap() : tipo) as z.ZodType).optional(),
+    ]),
+  );
+  return z.object(shape) as unknown as ReturnType<z.ZodObject<T>['partial']>;
+}

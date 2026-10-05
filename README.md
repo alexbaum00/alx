@@ -30,8 +30,22 @@ Ao iniciar, o servidor mostra o endereço para abrir no celular conectado ao mes
 | `npm run db:push` | aplica o `schema.prisma` no banco |
 | `npm run db:backup` | salva uma cópia datada do banco em `backups/` |
 
-## API (Fase 1)
+## API
 
-- `GET /api/health`
-- `GET /api/clientes?busca=&pagina=&porPagina=` (busca por nome, CPF/CNPJ, telefone ou placa)
-- `GET /api/clientes/:id` · `POST /api/clientes` · `PUT /api/clientes/:id` · `DELETE /api/clientes/:id`
+Todos os cadastros seguem o mesmo padrão: `GET /` (com `?busca=&pagina=&porPagina=`), `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`.
+
+| Recurso | Rota | Extras |
+|---|---|---|
+| Painel | `GET /api/dashboard/stats` | cards e tabelas da tela Início |
+| Clientes | `/api/clientes` | busca por nome, CPF/CNPJ, telefone ou placa |
+| Veículos | `/api/veiculos` | `?clienteId=`; placa antiga ou Mercosul |
+| Fornecedores | `/api/fornecedores` | |
+| Produtos | `/api/produtos` | `?categoria=&estoqueBaixo=true`, `GET /estoque-baixo`, `GET /categorias`, `POST /:id/entrada`, `POST /:id/ajuste` |
+| Serviços | `/api/servicos` | catálogo de mão de obra |
+| Procedimentos | `/api/procedimentos` | busca por várias palavras em todos os campos |
+| Vendas | `/api/vendas` | sem DELETE; `PATCH /:id/status` (concluir/pagar baixa estoque, cancelar devolve) |
+| Orçamentos | `/api/orcamentos` | `PATCH /:id/status`, `POST /:id/converter` (gera a venda) |
+| Despesas | `/api/despesas` | `?de=&ate=`; retorna `totalCentavos` do período |
+| Empresa | `GET/PUT /api/empresa` | dados da oficina |
+
+Valores em dinheiro trafegam em centavos (`2500` = R$ 25,00).

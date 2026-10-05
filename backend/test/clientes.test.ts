@@ -2,6 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../src/app.js';
 import { prisma } from '../src/lib/prisma.js';
+import { limparBanco } from './helpers.js';
 
 let app: FastifyInstance;
 
@@ -14,10 +15,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-beforeEach(async () => {
-  await prisma.veiculo.deleteMany();
-  await prisma.cliente.deleteMany();
-});
+beforeEach(limparBanco);
 
 describe('health', () => {
   it('responde ok com o banco acessível', async () => {
