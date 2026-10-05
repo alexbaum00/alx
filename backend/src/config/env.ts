@@ -1,7 +1,10 @@
+import { resolve } from 'node:path';
 import { z } from 'zod';
 
+// backend/.env, achado pela posição deste arquivo (src/config ou dist/config),
+// e não pela pasta de onde o comando foi rodado
 try {
-  process.loadEnvFile();
+  process.loadEnvFile(resolve(import.meta.dirname, '..', '..', '.env'));
 } catch {
   // sem .env: usa as variáveis do ambiente e os padrões abaixo
 }

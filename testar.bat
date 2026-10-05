@@ -34,24 +34,16 @@ echo [2/5] Compilando...
 call npm run build
 if errorlevel 1 goto erro
 
-rem Dados de exemplo so na primeira vez (banco ainda nao existe)
-set PRIMEIRA=0
-if not exist backend\prisma\alx.db set PRIMEIRA=1
-
 echo.
 echo [3/5] Preparando o banco de dados...
 call npm run db:migrate
 if errorlevel 1 goto erro
 
-if "%PRIMEIRA%"=="1" (
-  echo.
-  echo [4/5] Carregando dados de exemplo...
-  call npm run db:seed
-  if errorlevel 1 goto erro
-) else (
-  echo.
-  echo [4/5] Banco ja existe; dados de exemplo nao foram recarregados.
-)
+rem O seed so carrega exemplos se o banco estiver vazio; seguro rodar sempre
+echo.
+echo [4/5] Dados de exemplo (so se o banco estiver vazio)...
+call npm run db:seed
+if errorlevel 1 goto erro
 
 echo.
 echo [5/5] Iniciando. O navegador abre em alguns segundos.

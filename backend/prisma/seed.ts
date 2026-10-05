@@ -1,7 +1,7 @@
 // Dados de exemplo para desenvolvimento (os mesmos que aparecem no layout de referência).
-import { PrismaClient, type Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import type { Prisma } from '@prisma/client';
+// carrega backend/.env (e o padrão de DATABASE_URL) antes de abrir o banco
+import { prisma } from '../src/lib/prisma.js';
 
 async function main() {
   const jaTem = await prisma.cliente.count();
