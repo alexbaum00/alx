@@ -1,5 +1,6 @@
 import type { Prisma, StatusVenda, FormaPagamento } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { AppError, NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import { calcularItens } from './itensService.js';
@@ -19,10 +20,9 @@ export async function listar(q: OrcamentoList) {
     status: q.status,
     ...(q.busca && {
       OR: [
-        { cliente: { nome: { contains: q.busca } } },
-        { nomeContato: { contains: q.busca } },
+        { cliente: { busca: { contains: normalizarBusca(q.busca) } } },
+        { busca: { contains: normalizarBusca(q.busca) } }, // contato e veículo descrito
         { veiculo: { placa: { contains: q.busca.toUpperCase() } } },
-        { descricaoVeiculo: { contains: q.busca } },
       ],
     }),
   };

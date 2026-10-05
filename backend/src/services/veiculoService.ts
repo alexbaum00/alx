@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { AppError, NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import { validarClienteVeiculo } from './vinculosService.js';
@@ -11,9 +12,8 @@ export async function listar(q: { busca?: string; clienteId?: number; pagina: nu
     ...(q.busca && {
       OR: [
         { placa: { contains: q.busca.toUpperCase().replace(/[^A-Z0-9]/g, '') || q.busca } },
-        { modelo: { contains: q.busca } },
-        { marca: { contains: q.busca } },
-        { cliente: { nome: { contains: q.busca } } },
+        { busca: { contains: normalizarBusca(q.busca) } },
+        { cliente: { busca: { contains: normalizarBusca(q.busca) } } },
       ],
     }),
   };

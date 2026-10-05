@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import { validarImagensLivres } from '../lib/imagens.js';
@@ -11,12 +12,7 @@ export async function listar(q: { busca?: string; pagina: number; porPagina: num
   const where: Prisma.ProcedimentoWhereInput = {
     AND: palavras.map((p) => ({
       OR: [
-        { modeloVeiculo: { contains: p } },
-        { defeitoReclamado: { contains: p } },
-        { diagnosticoEncontrado: { contains: p } },
-        { solucaoAplicada: { contains: p } },
-        { esquemaEletricoAnotacoes: { contains: p } },
-        { tags: { contains: p } },
+        { busca: { contains: normalizarBusca(p) } },
         { veiculo: { placa: { contains: p.toUpperCase() } } },
       ],
     })),

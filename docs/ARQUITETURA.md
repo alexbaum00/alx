@@ -109,8 +109,16 @@ Sessões valem 30 dias e são renovadas com o uso. O cookie não tem a flag `Sec
 - **Categorias de serviço**: lista fixa (Elétrica, Película, Som, Chave, Outros) em `Servico.categoria`, para não surgirem blocos duplicados por grafia diferente. A tela Serviços mostra um bloco por categoria, nessa ordem, com cores em `frontend/src/lib/categoriasServico.ts` (amarelo, grafite, roxo, vermelho, preto). A migração `2_categoria_servico` classifica os serviços já cadastrados por palavra-chave no nome; o resto fica em Outros.
 - **Ferramentas** (Cadastros › Ferramentas): valor por unidade × quantidade; o resumo soma o investido sem as descartadas, por categoria, e conta as em manutenção e na garantia.
 
+## Busca sem acento
+
+O `LIKE` do SQLite só ignora maiúsculas/minúsculas em letras sem acento. Por isso, 10 tabelas (Cliente, Veiculo, Fornecedor, Produto, Servico, Procedimento, Ferramenta, Despesa, Orcamento, ItemVenda) têm a coluna `busca`, com os campos de texto em minúsculas e sem acento ("Relé 12V" → "rele 12v"). A busca normaliza o termo do mesmo jeito (`backend/src/lib/busca.ts`) e procura nessa coluna. CPF/CNPJ, telefone e placa continuam buscados direto.
+
+- A coluna é mantida por **gatilhos no banco** (`<Tabela>_busca_insert` e `<Tabela>_busca_update`), criados na migração `3_busca_sem_acento`. Assim vale para qualquer gravação (tela, seed, gravações aninhadas) sem código extra.
+- **Cuidado em migrações futuras**: se o Prisma gerar `RedefineTables` (recriar a tabela) para uma dessas 10 tabelas, os gatilhos dela somem junto com a tabela antiga. Recrie-os na mesma migração copiando os da `3_busca_sem_acento`. O teste "gatilhos de busca existem" (`backend/test/busca.test.ts`) falha se algum faltar.
+- O `create` do Prisma devolve a linha antes do gatilho rodar, então o `busca` no objeto retornado vem vazio; no banco ele já está certo. Nada na tela usa esse campo.
+
 ## Pendências conhecidas
 
 - Scripts de Windows escritos e revisados, mas não executados num Windows real durante o desenvolvimento.
 - PWA instalável só com HTTPS (nuvem, mkcert ou túnel).
-- **Busca não ignora acentos**: o `LIKE` do SQLite só ignora maiúsculas/minúsculas em letras sem acento, então "rele" não acha "Relé" e "multi" não acha "Multímetro". Solução prevista: guardar uma versão normalizada (minúsculas, sem acento) dos campos pesquisáveis e buscar nela.
+

@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { AppError, NotFoundError } from '../lib/errors.js';
 import type { ClienteCreate, ClienteUpdate } from '../schemas/cliente.js';
 
@@ -8,7 +9,7 @@ export async function listar(params: { busca?: string; pagina: number; porPagina
   const where: Prisma.ClienteWhereInput = busca
     ? {
         OR: [
-          { nome: { contains: busca } },
+          { busca: { contains: normalizarBusca(busca) } },
           { cpfCnpj: { contains: busca.replace(/\D/g, '') || busca } },
           { telefone: { contains: busca } },
           { veiculos: { some: { placa: { contains: busca.toUpperCase() } } } },

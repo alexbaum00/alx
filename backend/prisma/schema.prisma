@@ -83,6 +83,7 @@ model Cliente {
   veiculos    Veiculo[]
   vendas      Venda[]
   orcamentos  Orcamento[]
+  busca       String      @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([nome])
 }
@@ -102,6 +103,7 @@ model Veiculo {
   vendas        Venda[]
   orcamentos    Orcamento[]
   procedimentos Procedimento[]
+  busca         String         @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([clienteId])
 }
@@ -119,6 +121,7 @@ model Fornecedor {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   produtos           Produto[]
+  busca              String    @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 }
 
 model Produto {
@@ -142,6 +145,7 @@ model Produto {
   itensVenda         ItemVenda[]
   itensOrcamento     ItemOrcamento[]
   movimentacoes      MovimentacaoEstoque[]
+  busca              String                @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([nome])
   @@index([categoria])
@@ -161,6 +165,7 @@ model Servico {
   updatedAt        DateTime        @updatedAt
   itensVenda       ItemVenda[]
   itensOrcamento   ItemOrcamento[]
+  busca            String          @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([nome])
   @@index([categoria])
@@ -180,6 +185,7 @@ model Procedimento {
   imagens                  Imagem[] // fotos de chicote, esquema, peça…
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
+  busca                    String   @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([modeloVeiculo])
 }
@@ -226,6 +232,7 @@ model ItemVenda {
   quantidade            Float    @default(1)
   valorUnitarioCentavos Int
   valorTotalCentavos    Int
+  busca                 String   @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([vendaId])
 }
@@ -255,6 +262,7 @@ model Orcamento {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
   itens                 ItemOrcamento[]
+  busca                 String          @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([data])
   @@index([status])
@@ -303,6 +311,7 @@ model Despesa {
   pago          Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  busca         String   @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([data])
 }
@@ -364,6 +373,7 @@ model Ferramenta {
   imagem              Imagem?   @relation(fields: [imagemId], references: [id], onDelete: SetNull)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  busca               String    @default("") // texto sem acento p/ busca (mantido por gatilho no banco)
 
   @@index([nome])
   @@index([categoria])

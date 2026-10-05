@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import type { FornecedorCreate, FornecedorUpdate } from '../schemas/cadastros.js';
@@ -8,10 +9,8 @@ export async function listar(q: { busca?: string; pagina: number; porPagina: num
   const where: Prisma.FornecedorWhereInput = q.busca
     ? {
         OR: [
-          { razaoSocial: { contains: q.busca } },
-          { nomeFantasia: { contains: q.busca } },
+          { busca: { contains: normalizarBusca(q.busca) } },
           { cnpj: { contains: q.busca.replace(/\D/g, '') || q.busca } },
-          { produtosFornecidos: { contains: q.busca } },
         ],
       }
     : {};

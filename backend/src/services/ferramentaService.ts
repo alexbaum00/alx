@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import { validarImagensLivres } from '../lib/imagens.js';
@@ -10,18 +11,7 @@ export async function listar(q: FerramentaList) {
     AND: [
       q.incluirDescartadas ? {} : { estado: { not: 'DESCARTADA' } },
       q.categoria ? { categoria: q.categoria } : {},
-      q.busca
-        ? {
-            OR: [
-              { nome: { contains: q.busca } },
-              { marca: { contains: q.busca } },
-              { modelo: { contains: q.busca } },
-              { categoria: { contains: q.busca } },
-              { numeroSerie: { contains: q.busca } },
-              { localizacao: { contains: q.busca } },
-            ],
-          }
-        : {},
+      q.busca ? { busca: { contains: normalizarBusca(q.busca) } } : {},
     ],
   };
   const [itens, total] = await prisma.$transaction([

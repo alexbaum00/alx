@@ -1,5 +1,6 @@
 import type { Prisma, StatusVenda, FormaPagamento } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { normalizarBusca } from '../lib/busca.js';
 import { AppError, NotFoundError } from '../lib/errors.js';
 import { paginar } from '../lib/crud.js';
 import { fimDoDia, inicioDoDia } from '../lib/datas.js';
@@ -27,9 +28,9 @@ export async function listar(q: VendaList) {
     data: { gte: q.de && inicioDoDia(q.de), lte: q.ate && fimDoDia(q.ate) },
     ...(q.busca && {
       OR: [
-        { cliente: { nome: { contains: q.busca } } },
+        { cliente: { busca: { contains: normalizarBusca(q.busca) } } },
         { veiculo: { placa: { contains: q.busca.toUpperCase() } } },
-        { itens: { some: { descricao: { contains: q.busca } } } },
+        { itens: { some: { busca: { contains: normalizarBusca(q.busca) } } } },
         ...(Number(q.busca) ? [{ id: Number(q.busca) }] : []),
       ],
     }),
