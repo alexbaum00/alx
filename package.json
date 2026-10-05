@@ -1,5 +1,5 @@
 {
-  "name": "alx-auto-eletrica",
+  "name": "alx-servicos-automotivos",
   "private": true,
   "workspaces": [
     "backend",

@@ -1,4 +1,4 @@
-# ALX Auto Elétrica
+# ALX Serviços Automotivos
 
 Sistema de gestão da oficina: vendas e ordens de serviço, orçamentos, clientes e veículos, estoque, fornecedores, histórico técnico (procedimentos), financeiro, relatórios e atalhos para a nota fiscal do MEI. Roda no computador da oficina e abre no celular pelo Wi-Fi.
 
@@ -25,7 +25,7 @@ Nada fica instalado no Windows (sem início automático, atalhos ou regra de fir
    - cria o banco de dados;
    - libera a porta 3000 no firewall para redes privadas (o Windows pede permissão de administrador);
    - faz o sistema **iniciar sozinho quando o Windows liga**;
-   - cria o atalho **ALX Auto Eletrica** na área de trabalho;
+   - cria o atalho **ALX Servicos Automotivos** na área de trabalho;
    - abre o navegador.
 4. Na primeira vez, **crie a senha** no navegador deste computador. Ela vale para o computador e para o celular.
 
@@ -41,7 +41,7 @@ Nada fica instalado no Windows (sem início automático, atalhos ou regra de fir
 
 ### No dia a dia
 
-- O sistema inicia junto com o Windows numa janela minimizada chamada *ALX Auto Eletrica*. **Não feche essa janela**: ela é o sistema rodando.
+- O sistema inicia junto com o Windows numa janela minimizada chamada *ALX Servicos Automotivos*. **Não feche essa janela**: ela é o sistema rodando.
 - Para abrir no computador: atalho da área de trabalho, ou <http://localhost:3000>.
 - Para iniciar manualmente: duplo clique em `iniciar.bat`.
 

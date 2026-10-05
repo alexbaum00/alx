@@ -62,8 +62,8 @@ export function Sidebar({ aberta, onFechar }: { aberta: boolean; onFechar: () =>
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-borda bg-painel transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${aberta ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="relative px-4 pt-6 pb-6">
-          <Logo />
+        <div className="relative flex justify-center px-4 pt-5 pb-4">
+          <Logo tamanho="size-28" />
           <button onClick={onFechar} className="absolute top-3 right-3 rounded-md p-1.5 text-suave hover:bg-card-hover lg:hidden" aria-label="Fechar menu">
             <X className="size-5" />
           </button>

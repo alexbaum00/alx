@@ -1,4 +1,4 @@
-# Arquitetura — ALX Auto Elétrica
+# Arquitetura — ALX Serviços Automotivos
 
 Referência visual: [`layout-referencia.jpg`](layout-referencia.jpg).
 

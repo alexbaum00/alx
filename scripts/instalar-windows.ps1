@@ -1,4 +1,4 @@
-﻿# Instalação do ALX Auto Elétrica no Windows.
+﻿# Instalação do ALX Serviços Automotivos no Windows.
 # Rodado pelo instalar.bat. Pode ser executado de novo para atualizar.
 $ErrorActionPreference = 'Stop'
 $raiz = Split-Path -Parent $PSScriptRoot
@@ -41,11 +41,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Falha ao preparar o banco' }
 
 # 4. Firewall: libera a porta só em redes privadas (Wi-Fi de casa/oficina)
 Passo "Liberando a porta $porta no firewall (redes privadas)"
-if (Get-NetFirewallRule -DisplayName 'ALX Auto Eletrica' -ErrorAction SilentlyContinue) {
+if (Get-NetFirewallRule -DisplayName 'ALX Servicos Automotivos' -ErrorAction SilentlyContinue) {
   Ok 'Regra já existe'
 } else {
   Write-Host '    O Windows vai pedir permissão de administrador.'
-  $comando = "New-NetFirewallRule -DisplayName 'ALX Auto Eletrica' -Direction Inbound -Protocol TCP -LocalPort $porta -Action Allow -Profile Private"
+  $comando = "New-NetFirewallRule -DisplayName 'ALX Servicos Automotivos' -Direction Inbound -Protocol TCP -LocalPort $porta -Action Allow -Profile Private"
   try {
     Start-Process powershell -Verb RunAs -Wait -ArgumentList '-NoProfile', '-Command', $comando
     Ok 'Regra criada'
@@ -57,7 +57,7 @@ if (Get-NetFirewallRule -DisplayName 'ALX Auto Eletrica' -ErrorAction SilentlyCo
 # 5. Atalhos: iniciar junto com o Windows e abrir pela área de trabalho
 Passo 'Criando atalhos'
 $shell = New-Object -ComObject WScript.Shell
-$inicio = $shell.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Startup')) 'ALX Auto Eletrica.lnk'))
+$inicio = $shell.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Startup')) 'ALX Servicos Automotivos.lnk'))
 $inicio.TargetPath = Join-Path $raiz 'iniciar.bat'
 $inicio.WorkingDirectory = $raiz
 $inicio.WindowStyle = 7  # minimizado
@@ -65,7 +65,7 @@ $inicio.Save()
 Ok 'Inicia sozinho quando o Windows liga'
 
 $area = [Environment]::GetFolderPath('Desktop')
-Set-Content -Path (Join-Path $area 'ALX Auto Eletrica.url') -Value "[InternetShortcut]`r`nURL=http://localhost:$porta/" -Encoding ASCII
+Set-Content -Path (Join-Path $area 'ALX Servicos Automotivos.url') -Value "[InternetShortcut]`r`nURL=http://localhost:$porta/" -Encoding ASCII
 Ok 'Atalho na área de trabalho'
 
 Passo 'Pronto!'

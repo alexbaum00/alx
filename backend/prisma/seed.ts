@@ -10,7 +10,7 @@ async function main() {
     return;
   }
 
-  await prisma.empresa.upsert({ where: { id: 1 }, update: {}, create: { nomeFantasia: 'ALX Auto Elétrica' } });
+  await prisma.empresa.upsert({ where: { id: 1 }, update: {}, create: { nomeFantasia: 'ALX Serviços Automotivos' } });
 
   const fornecedor = await prisma.fornecedor.create({
     data: { razaoSocial: 'Distribuidora Elétrica Exemplo Ltda', nomeFantasia: 'DistriAuto', produtosFornecidos: 'Lâmpadas, relés, fusíveis, cabos' },

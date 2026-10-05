@@ -15,7 +15,7 @@ const veiculoTexto = (v: Venda['veiculo']) => (v ? `${[v.marca, v.modelo].filter
 export function descricaoServicos(venda: Venda) {
   const servicos = venda.itens.filter((i) => i.tipo === 'SERVICO').map((i) => (i.quantidade !== 1 ? `${formatarQuantidade(i.quantidade)}x ${i.descricao}` : i.descricao));
   const veiculo = veiculoTexto(venda.veiculo);
-  return `Serviços de auto elétrica: ${servicos.join('; ') || '—'}.${veiculo ? ` Veículo ${veiculo}.` : ''}`;
+  return `Serviços automotivos: ${servicos.join('; ') || '—'}.${veiculo ? ` Veículo ${veiculo}.` : ''}`;
 }
 
 // "1.234,56" — formato que os campos de valor dos emissores aceitam
@@ -60,7 +60,7 @@ export function textoCompletoNota(venda: Venda, empresa?: Empresa | null) {
 
 // Mensagem para mandar ao cliente pelo WhatsApp (resumo da venda ou do orçamento).
 export function textoParaCliente(doc: Venda | Orcamento, tipo: 'venda' | 'orcamento', empresa?: Empresa | null) {
-  const oficina = empresa?.nomeFantasia ?? 'ALX Auto Elétrica';
+  const oficina = empresa?.nomeFantasia ?? 'ALX Serviços Automotivos';
   const titulo = tipo === 'venda' ? `*${oficina}* — Venda #${doc.id}` : `*${oficina}* — Orçamento #${doc.id}`;
   const linhas = [titulo, formatarDataHora(doc.data), ''];
   for (const i of doc.itens) linhas.push(`• ${formatarQuantidade(i.quantidade)} x ${i.descricao} — ${formatarMoeda(i.valorTotalCentavos)}`);

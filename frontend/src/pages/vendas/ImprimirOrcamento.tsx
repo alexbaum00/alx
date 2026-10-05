@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Printer } from 'lucide-react';
@@ -18,8 +18,10 @@ export function ImprimirOrcamento() {
   const orcamento = useQuery({ queryKey: ['orcamentos', 'detalhe', id], queryFn: () => api<Orcamento>(`/orcamentos/${id}`) });
   const empresa = useQuery({ queryKey: ['empresa'], queryFn: () => api<Empresa>('/empresa') });
   const jaImprimiu = useRef(false);
+  const [logoPronto, setLogoPronto] = useState(false);
 
-  const pronto = orcamento.data && empresa.data;
+  // só imprime depois que o logo carregou, senão ele pode sair em branco no papel
+  const pronto = orcamento.data && empresa.data && logoPronto;
   useEffect(() => {
     if (!pronto) return;
     document.title = `Orçamento ${orcamento.data!.id} - ${empresa.data!.nomeFantasia}`; // nome sugerido ao salvar PDF
@@ -57,12 +59,9 @@ export function ImprimirOrcamento() {
 
       <article className="mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white p-4 text-[12px] sm:p-[12mm] leading-snug text-slate-900 shadow-xl print:min-h-0 print:max-w-none print:p-0 print:shadow-none">
         <header className="flex items-start justify-between gap-6 border-b-2 border-orange-600 pb-4">
-          <div>
-            <p className="text-3xl font-black tracking-tight italic">
-              AL<span className="text-orange-600">X</span>
-            </p>
-            <p className="text-[10px] font-semibold tracking-[0.25em] text-slate-500">AUTO ELÉTRICA</p>
-            <div className="mt-2 space-y-0.5 text-[11px] text-slate-600">
+          <div className="flex items-center gap-3">
+            <img src="/logo-alx.png" alt="ALX Serviços Automotivos" className="size-20 shrink-0" onLoad={() => setLogoPronto(true)} onError={() => setLogoPronto(true)} />
+            <div className="space-y-0.5 text-[11px] text-slate-600">
               <p className="font-semibold text-slate-900">{e.razaoSocial || e.nomeFantasia}</p>
               {e.cnpj && <p>CNPJ {formatarDocumento(e.cnpj)}</p>}
               {enderecoOficina && <p>{enderecoOficina}</p>}

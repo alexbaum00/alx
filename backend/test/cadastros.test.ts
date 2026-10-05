@@ -85,7 +85,7 @@ describe('despesas e empresa', () => {
     expect((await get('/api/despesas?de=2026-10-02')).json().totalCentavos).toBe(25000);
 
     const empresa = await app.inject({ method: 'PUT', url: '/api/empresa', payload: { cnpj: '12.345.678/0001-90', uf: 'sp' } });
-    expect(empresa.json()).toMatchObject({ nomeFantasia: 'ALX Auto Elétrica', cnpj: '12345678000190', uf: 'SP' });
+    expect(empresa.json()).toMatchObject({ nomeFantasia: 'ALX Serviços Automotivos', cnpj: '12345678000190', uf: 'SP' });
   });
 });
 

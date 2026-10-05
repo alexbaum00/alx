@@ -1,7 +1,7 @@
 @echo off
 rem Instalacao SO PARA TESTE (duplo clique). Nao inicia com o Windows,
 rem nao cria atalhos e nao mexe no firewall. Para remover, apague a pasta.
-title ALX Auto Eletrica - TESTE
+title ALX Servicos Automotivos - TESTE
 cd /d "%~dp0"
 
 if not exist package.json (

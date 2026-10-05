@@ -1,4 +1,4 @@
-// Modelagem do sistema ALX Auto Elétrica.
+// Modelagem do sistema ALX Serviços Automotivos.
 // Convenções:
 // - Valores em dinheiro são inteiros em centavos (campos terminados em "Centavos").
 // - Quantidades são Float porque cabos e fios são vendidos por metro.
@@ -49,7 +49,7 @@ enum TipoMovimentacao {
 // Dados da própria oficina (linha única), usados no cabeçalho e na cópia para NF.
 model Empresa {
   id            Int     @id @default(1)
-  nomeFantasia  String  @default("ALX Auto Elétrica")
+  nomeFantasia  String  @default("ALX Serviços Automotivos")
   razaoSocial   String?
   cnpj          String?
   telefone      String?
