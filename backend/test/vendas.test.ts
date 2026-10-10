@@ -157,6 +157,11 @@ describe('Pix da venda', () => {
     expect(pix.payload).toContain('5406150.50');
     expect(pix.payload).toContain(`VENDA${venda.id}`);
     expect(pix.qrSvg).toContain('<svg');
+
+    // Nova Venda: QR pelo valor, antes de a venda ser salva
+    const avulso = (await app.inject({ method: 'GET', url: '/api/sistema/pix?valorCentavos=17000' })).json();
+    expect(avulso.payload).toContain('5406170.00');
+    expect((await app.inject({ method: 'GET', url: '/api/sistema/pix?valorCentavos=0' })).statusCode).toBe(400);
     await prisma.empresa.deleteMany();
   });
 });
