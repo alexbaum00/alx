@@ -1,6 +1,6 @@
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Eye, EyeOff, Lock, Monitor } from 'lucide-react';
+import { Eye, EyeOff, Lock, LockOpen, Monitor } from 'lucide-react';
 import { api, EVENTO_SESSAO_EXPIRADA, type EstadoAcesso } from '@/lib/api';
 import { Logo } from '@/components/layout/Logo';
 import { Botao } from '@/components/ui/Botao';
@@ -33,16 +33,28 @@ export function PortaoAcesso({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+// Fundo escuro desfocado, cartão de vidro e o logo redondo "encaixado" no topo do cartão.
 function Moldura({ titulo, subtitulo, children }: { titulo: string; subtitulo: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-borda bg-painel p-6 shadow-2xl">
-        <div className="mb-6 flex justify-center">
-          <Logo />
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#0a1020] px-4 py-10">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 blur-3xl">
+        <div className="absolute -top-1/4 left-[5%] size-[60vmax] rounded-full bg-[#2a4a63]/45" />
+        <div className="absolute top-[30%] -left-[15%] size-[45vmax] rounded-full bg-[#3b4652]/45" />
+        <div className="absolute -top-[10%] -right-[10%] size-[50vmax] rounded-full bg-[#4a5866]/40" />
+        <div className="absolute -right-[5%] -bottom-1/4 size-[50vmax] rounded-full bg-[#3f4248]/45" />
+        <div className="absolute -bottom-1/3 left-1/4 size-[45vmax] rounded-full bg-[#060a1a]/80" />
+        <div className="absolute top-[35%] left-[35%] size-[30vmax] rounded-full bg-[#0b1226]/70" />
+      </div>
+
+      <div className="relative mt-20 w-full max-w-md">
+        <div className="absolute -top-20 left-1/2 z-10 -translate-x-1/2 rounded-full shadow-[0_0_28px_rgba(249,115,22,0.3),0_10px_30px_rgba(0,0,0,0.6)]">
+          <Logo tamanho="size-40" escuro className="rounded-full" />
         </div>
-        <h1 className="text-center text-lg font-semibold text-white">{titulo}</h1>
-        <p className="mb-5 text-center text-sm text-suave">{subtitulo}</p>
-        {children}
+        <div className="rounded-3xl border border-white/10 bg-slate-800/30 px-6 pt-24 pb-7 shadow-2xl shadow-black/50 backdrop-blur-xl sm:px-9">
+          <h1 className="text-center text-xl font-semibold text-white">{titulo}</h1>
+          <p className="mt-1 mb-6 text-center text-suave">{subtitulo}</p>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -54,8 +66,17 @@ function CampoSenha({ rotulo, valor, onChange, autoFocus, autoComplete }: { rotu
   return (
     <Campo rotulo={rotulo} htmlFor={id}>
       <div className="relative">
-        <Input id={id} type={ver ? 'text' : 'password'} value={valor} onChange={(e) => onChange(e.target.value)} autoFocus={autoFocus} autoComplete={autoComplete} className="pr-10" />
-        <button type="button" onClick={() => setVer((v) => !v)} className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-apagado hover:text-white" aria-label={ver ? 'Esconder senha' : 'Mostrar senha'}>
+        <Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-apagado" aria-hidden="true" />
+        <Input
+          id={id}
+          type={ver ? 'text' : 'password'}
+          value={valor}
+          onChange={(e) => onChange(e.target.value)}
+          autoFocus={autoFocus}
+          autoComplete={autoComplete}
+          className="h-12 border-white/10 bg-slate-950/60 pr-11 pl-10 sm:h-12"
+        />
+        <button type="button" onClick={() => setVer((v) => !v)} className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded p-1 text-apagado hover:text-white" aria-label={ver ? 'Esconder senha' : 'Mostrar senha'}>
           {ver ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
         </button>
       </div>
@@ -88,11 +109,11 @@ function Entrar() {
       <form onSubmit={enviar} className="space-y-4">
         <CampoSenha rotulo="Senha" valor={senha} onChange={setSenha} autoFocus autoComplete="current-password" />
         {entrar.error && <p className="text-sm text-red-400">{entrar.error.message}</p>}
-        <Botao type="submit" className="h-11 w-full" icone={<Lock className="size-4" />} carregando={entrar.isPending}>
+        <Botao type="submit" className="h-12 w-full text-base font-semibold" icone={<LockOpen className="size-4" />} carregando={entrar.isPending}>
           Entrar
         </Botao>
       </form>
-      <p className="mt-5 text-center text-xs text-apagado">Esqueceu? No computador da oficina, rode “npm run senha:redefinir”.</p>
+      <p className="mt-6 text-center text-xs text-suave">Esqueceu? No computador da oficina, rode “npm run senha:redefinir”.</p>
     </Moldura>
   );
 }
@@ -136,7 +157,7 @@ function CriarSenha({ local }: { local: boolean }) {
         <CampoSenha rotulo="Repita a senha" valor={confirmacao} onChange={setConfirmacao} autoComplete="new-password" />
         <p className="text-xs text-apagado">Pode ser um PIN de 4 ou mais números, mas uma frase curta é mais segura.</p>
         {erro && <p className="text-sm text-red-400">{erro}</p>}
-        <Botao type="submit" className="h-11 w-full" carregando={criar.isPending}>
+        <Botao type="submit" className="h-12 w-full text-base font-semibold" carregando={criar.isPending}>
           Criar senha e entrar
         </Botao>
       </form>
