@@ -154,3 +154,18 @@ export type FerramentaUpdate = z.infer<typeof ferramentaUpdate>;
 export type FerramentaList = z.infer<typeof ferramentaList>;
 export type DespesaCreate = z.infer<typeof despesaCreate>;
 export type DespesaUpdate = z.infer<typeof despesaUpdate>;
+
+// Rádio do player: o link precisa ser http(s), de preferência o stream direto (.mp3, .aac, /stream…).
+export const radioCreate = z.object({
+  nome: z.string().trim().min(1, 'Nome é obrigatório'),
+  descricao: textoOpcional,
+  url: z
+    .string()
+    .trim()
+    .min(1, 'Link da transmissão é obrigatório')
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), 'Use um link que comece com http:// ou https://'),
+  tocarAoAbrir: z.boolean().default(false),
+});
+export const radioUpdate = parcial(radioCreate);
+export type RadioCreate = z.infer<typeof radioCreate>;
+export type RadioUpdate = z.infer<typeof radioUpdate>;

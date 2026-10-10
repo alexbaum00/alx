@@ -55,6 +55,7 @@ Diferenças em relação à imagem: "Clientes" e "Serviços" saem do primeiro n�
 | Financeiro: resumo do mês e despesas | `GET /api/relatorios/financeiro`, `/api/despesas` | ✅ |
 | Relatórios: faturamento por dia, ranking de peças e serviços | `GET /api/relatorios/vendas` | ✅ |
 | Configurações: dados da oficina e link da NF-e | `/api/empresa` | ✅ |
+| Configurações ▸ Rádios e player do topo | `/api/radios` | ✅ |
 | Busca do topo | clientes, veículos e peças | ✅ |
 
 ### Nota fiscal (MEI)

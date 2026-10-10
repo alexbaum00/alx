@@ -1,15 +1,24 @@
-// Fundo escuro com manchas desfocadas (azul e cinza), atrás da tela de entrada e do sistema.
+// Fundo escuro com manchas claras e desfocadas (cinza-azulado), atrás da tela de entrada e do sistema.
 // Fica fixo na janela; os cartões por cima são translúcidos e deixam ele aparecer.
+const manchas = [
+  'top-[-10%] left-[-8%] size-[34vmax] bg-[#4c6a84]/40',
+  'top-[40%] left-[-10%] size-[28vmax] bg-[#6b7782]/30',
+  'bottom-[-12%] left-[12%] size-[26vmax] bg-[#56616b]/30',
+  'top-[-12%] left-[38%] size-[26vmax] bg-[#3e5a72]/35',
+  'top-[30%] left-[28%] size-[24vmax] bg-[#5f7385]/22',
+  'bottom-[-10%] left-[48%] size-[28vmax] bg-[#4a5966]/30',
+  'top-[-12%] right-[-6%] size-[32vmax] bg-[#7d8892]/30',
+  'top-[38%] right-[-6%] size-[30vmax] bg-[#69737c]/30',
+  'top-[22%] right-[24%] size-[20vmax] bg-[#55697a]/22',
+];
+
 export function FundoDesfocado() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0a1020] print:hidden">
-      <div className="absolute inset-0 transform-gpu blur-3xl">
-        <div className="absolute -top-1/4 left-[5%] size-[60vmax] rounded-full bg-[#2a4a63]/45" />
-        <div className="absolute top-[30%] -left-[15%] size-[45vmax] rounded-full bg-[#3b4652]/45" />
-        <div className="absolute -top-[10%] -right-[10%] size-[50vmax] rounded-full bg-[#4a5866]/40" />
-        <div className="absolute -right-[5%] -bottom-1/4 size-[50vmax] rounded-full bg-[#3f4248]/45" />
-        <div className="absolute -bottom-1/3 left-1/4 size-[45vmax] rounded-full bg-[#060a1a]/80" />
-        <div className="absolute top-[35%] left-[35%] size-[30vmax] rounded-full bg-[#0b1226]/70" />
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0d1626] print:hidden">
+      <div className="absolute inset-0 transform-gpu blur-[90px]">
+        {manchas.map((m) => (
+          <div key={m} className={`absolute rounded-full ${m}`} />
+        ))}
       </div>
     </div>
   );

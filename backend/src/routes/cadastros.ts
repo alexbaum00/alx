@@ -9,6 +9,7 @@ import * as servicoService from '../services/servicoService.js';
 import * as procedimentoService from '../services/procedimentoService.js';
 import * as despesaService from '../services/despesaService.js';
 import * as ferramentaService from '../services/ferramentaService.js';
+import * as radioService from '../services/radioService.js';
 import { prisma } from '../lib/prisma.js';
 
 export async function veiculoRoutes(app: FastifyInstance) {
@@ -55,4 +56,14 @@ export async function empresaRoutes(app: FastifyInstance) {
 export async function ferramentaRoutes(app: FastifyInstance) {
   app.get('/resumo', async () => ferramentaService.resumo());
   registrarCrud(app, ferramentaService, { create: s.ferramentaCreate, update: s.ferramentaUpdate, list: s.ferramentaList });
+}
+
+export async function radioRoutes(app: FastifyInstance) {
+  app.get('/', async () => radioService.listar());
+  app.post('/', async (req, reply) => reply.code(201).send(await radioService.criar(s.radioCreate.parse(req.body))));
+  app.put('/:id', async (req) => radioService.atualizar(idParam.parse(req.params).id, s.radioUpdate.parse(req.body)));
+  app.delete('/:id', async (req, reply) => {
+    await radioService.remover(idParam.parse(req.params).id);
+    return reply.code(204).send();
+  });
 }
