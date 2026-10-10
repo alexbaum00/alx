@@ -13,6 +13,7 @@ import { useAviso } from '@/components/ui/Toast';
 import { EditorItens, ResumoTotais, itensDoDocumento, itensParaApi, totalItem, validarItens, type ItemForm } from '@/components/vendas/EditorItens';
 import { SecaoCliente } from '@/components/vendas/SecaoCliente';
 import { FormasPagamento } from '@/components/vendas/FormasPagamento';
+import { QrPix } from '@/components/vendas/PixVenda';
 
 export function NovaVenda() {
   return <FormularioVenda venda={null} />;
@@ -37,6 +38,7 @@ function FormularioVenda({ venda }: { venda: Venda | null }) {
   const [desconto, setDesconto] = useState(venda?.descontoCentavos ?? 0);
   const [observacoes, setObservacoes] = useState(venda?.observacoes ?? '');
   const [forma, setForma] = useState<FormaPagamento | null>(venda?.formaPagamento ?? 'PIX');
+  const total = itens.reduce((t, i) => t + totalItem(i), 0) - desconto;
   const navigate = useNavigate();
   const qc = useQueryClient();
   const avisar = useAviso();
@@ -67,7 +69,6 @@ function FormularioVenda({ venda }: { venda: Venda | null }) {
   const enviar = (status: Exclude<StatusVenda, 'CANCELADO'>) => {
     const problema = validarItens(itens);
     if (problema) return avisar(problema, 'erro');
-    const total = itens.reduce((t, i) => t + totalItem(i), 0) - desconto;
     if (total < 0) return avisar('O desconto é maior que o valor dos itens.', 'erro');
     if (status === 'PAGO' && !forma) return avisar('Escolha a forma de pagamento.', 'erro');
     salvar.mutate(status);
@@ -109,13 +110,26 @@ function FormularioVenda({ venda }: { venda: Venda | null }) {
                 <p className="mb-2 text-xs font-medium text-suave">Forma de pagamento</p>
                 <FormasPagamento valor={forma} onChange={setForma} />
               </div>
+              {forma === 'PIX' && total > 0 && (
+                <div className="rounded-xl border border-borda bg-slate-950/30 p-3">
+                  <QrPix valorCentavos={total} compacto />
+                  <p className="mt-2 text-center text-xs text-apagado">Mostre ao cliente. Depois de conferir o Pix no app do banco, clique em Finalizar e receber.</p>
+                </div>
+              )}
               <Botao variante="sucesso" className="h-12 w-full text-base" icone={<CircleCheck className="size-5" />} carregando={salvar.isPending && salvar.variables === 'PAGO'} onClick={() => enviar('PAGO')}>
                 Finalizar e receber
               </Botao>
               <Botao variante="secundario" className="w-full" icone={<ClipboardList className="size-4" />} carregando={salvar.isPending && salvar.variables === 'ABERTO'} onClick={() => enviar('ABERTO')}>
                 Abrir ordem de serviço
               </Botao>
-              <p className="text-xs text-apagado">A ordem de serviço fica aberta para concluir e receber depois. As peças saem do estoque ao concluir ou receber.</p>
+              <ul className="space-y-1 text-xs text-apagado">
+                <li>
+                  <span className="text-suave">Finalizar e receber:</span> o cliente já pagou. A venda fica paga e as peças saem do estoque.
+                </li>
+                <li>
+                  <span className="text-suave">Abrir ordem de serviço:</span> o carro fica na oficina. Você conclui e recebe depois, na tela da venda.
+                </li>
+              </ul>
             </>
           )}
         </Card>
