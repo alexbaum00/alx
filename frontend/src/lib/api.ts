@@ -192,6 +192,9 @@ export interface Empresa {
   cidade: string | null;
   uf: string | null;
   urlEmissorNfe: string | null;
+  pixChave: string | null;
+  pixNome: string | null;
+  pixCidade: string | null;
 }
 
 export interface EstadoAcesso {

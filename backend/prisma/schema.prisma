@@ -62,6 +62,10 @@ model Empresa {
   uf            String?
   // NF-e de peças varia por estado (ex.: app Nota Fiscal Fácil da SEFAZ); a oficina informa o link
   urlEmissorNfe String?
+  // Pix da oficina: gera o QR code com o valor de cada venda (nome e cidade vão no código)
+  pixChave      String?
+  pixNome       String?
+  pixCidade     String?
 }
 
 model Cliente {

@@ -30,6 +30,15 @@ const campos: { nome: keyof Empresa; rotulo: string; classe?: string; placeholde
     placeholder: 'https://…',
     ajuda: 'Varia por estado (ex.: portal da SEFAZ ou app Nota Fiscal Fácil). Aparece como botão na tela da venda.',
   },
+  {
+    nome: 'pixChave',
+    rotulo: 'Chave Pix',
+    classe: 'sm:col-span-3',
+    placeholder: 'CPF, CNPJ, e-mail, +55 celular ou chave aleatória',
+    ajuda: 'Gera o QR code com o valor de cada venda. Celular com +55 e DDD (ex.: +5511999998888).',
+  },
+  { nome: 'pixNome', rotulo: 'Nome no Pix', classe: 'sm:col-span-2', placeholder: 'Como aparece no banco', ajuda: 'Vazio: usa a razão social.' },
+  { nome: 'pixCidade', rotulo: 'Cidade no Pix', classe: 'sm:col-span-1', ajuda: 'Vazio: usa a cidade.' },
 ];
 
 export function Configuracoes() {
