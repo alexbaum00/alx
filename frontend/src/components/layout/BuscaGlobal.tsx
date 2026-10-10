@@ -60,7 +60,7 @@ export function BuscaGlobal() {
         onFocus={() => setAberta(true)}
         onKeyDown={(e) => e.key === 'Escape' && fechar()}
         placeholder="Buscar por cliente, veículo, peça..."
-        className="h-10 w-full rounded-lg border border-borda bg-card pr-9 pl-9 text-sm text-texto placeholder:text-apagado focus:border-laranja/60 focus:ring-2 focus:ring-laranja/20 focus:outline-none"
+        className="h-10 w-full rounded-xl border border-borda bg-slate-950/30 pr-9 pl-9 text-sm text-texto placeholder:text-apagado focus:border-laranja/60 focus:ring-2 focus:ring-laranja/20 focus:outline-none"
       />
       {isFetching && <Loader2 className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-apagado" />}
 

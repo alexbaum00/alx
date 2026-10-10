@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { FundoDesfocado } from './Fundo';
 
 export function AppLayout() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -20,7 +21,8 @@ export function AppLayout() {
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="relative isolate flex min-h-screen">
+      <FundoDesfocado />
       <Sidebar aberta={menuAberto} onFechar={() => setMenuAberto(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onAbrirMenu={() => setMenuAberto(true)} />

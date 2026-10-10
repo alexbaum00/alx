@@ -4,9 +4,10 @@
 @theme {
   --color-fundo: #0b1120;
   --color-painel: #0f172a;
-  --color-card: #111a2e;
-  --color-card-hover: #16213a;
-  --color-borda: #1e293b;
+  /* cartões e bordas translúcidos: o fundo desfocado aparece por trás */
+  --color-card: rgb(30 41 59 / 0.35);
+  --color-card-hover: rgb(71 85 105 / 0.3);
+  --color-borda: rgb(148 163 184 / 0.16);
   --color-texto: #e2e8f0;
   --color-suave: #94a3b8;
   --color-apagado: #64748b;
