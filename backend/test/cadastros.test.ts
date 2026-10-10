@@ -106,3 +106,20 @@ describe('serviços por categoria', () => {
     expect(editado.json()).toMatchObject({ categoria: 'SOM', precoCentavos: 7000 });
   });
 });
+
+describe('rádios', () => {
+  it('cadastra, valida o link e deixa só uma tocando ao abrir', async () => {
+    expect((await post('/api/radios', { nome: 'Sem link', url: 'radio.com' })).statusCode).toBe(400);
+    const rock = (await post('/api/radios', { nome: 'Rádio ALX FM', descricao: 'Rádio Rock FM', url: 'https://stream.exemplo.com/rock', tocarAoAbrir: true })).json();
+    const pop = (await post('/api/radios', { nome: 'Pop', url: 'http://stream.exemplo.com:8000/pop' })).json();
+    expect(pop.tocarAoAbrir).toBe(false);
+
+    const put = await app.inject({ method: 'PUT', url: `/api/radios/${pop.id}`, payload: { tocarAoAbrir: true } });
+    expect(put.json().tocarAoAbrir).toBe(true);
+    const lista = (await get('/api/radios')).json() as { id: number; tocarAoAbrir: boolean }[];
+    expect(lista.map((r) => [r.id, r.tocarAoAbrir])).toEqual([[rock.id, false], [pop.id, true]]);
+
+    expect((await app.inject({ method: 'DELETE', url: `/api/radios/${rock.id}` })).statusCode).toBe(204);
+    expect((await app.inject({ method: 'DELETE', url: `/api/radios/${rock.id}` })).statusCode).toBe(404);
+  });
+});

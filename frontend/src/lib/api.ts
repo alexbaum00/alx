@@ -199,3 +199,11 @@ export interface EstadoAcesso {
   autenticado: boolean;
   acessoLocal: boolean;
 }
+
+export interface Radio {
+  id: number;
+  nome: string;
+  descricao: string | null;
+  url: string;
+  tocarAoAbrir: boolean;
+}

@@ -378,3 +378,15 @@ model Ferramenta {
   @@index([nome])
   @@index([categoria])
 }
+
+// Rádios do player do topo. A url é o link direto da transmissão (stream de áudio).
+// No máximo uma tem tocarAoAbrir: é a que começa a tocar quando o sistema abre.
+model Radio {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  descricao    String?
+  url          String
+  tocarAoAbrir Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

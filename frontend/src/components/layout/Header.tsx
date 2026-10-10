@@ -5,6 +5,7 @@ import { LogOut, Menu, Settings } from 'lucide-react';
 import { api, type EstadoAcesso } from '@/lib/api';
 import { CHAVE_ACESSO } from '@/components/acesso/Acesso';
 import { BuscaGlobal } from './BuscaGlobal';
+import { PlayerRadio } from './PlayerRadio';
 
 function Relogio() {
   const [agora, setAgora] = useState(() => new Date());
@@ -20,8 +21,23 @@ function Relogio() {
   );
 }
 
+// O player de rádio fica só no computador: no celular o topo não tem espaço
+// e ninguém quer o rádio tocando no bolso ao abrir o sistema.
+function useTelaGrande() {
+  const consulta = '(min-width: 1024px)';
+  const [grande, setGrande] = useState(() => window.matchMedia(consulta).matches);
+  useEffect(() => {
+    const m = window.matchMedia(consulta);
+    const mudou = () => setGrande(m.matches);
+    m.addEventListener('change', mudou);
+    return () => m.removeEventListener('change', mudou);
+  }, []);
+  return grande;
+}
+
 export function Header({ onAbrirMenu }: { onAbrirMenu: () => void }) {
   const qc = useQueryClient();
+  const telaGrande = useTelaGrande();
   const sair = async () => {
     await api('/auth/sair', { method: 'POST' }).catch(() => undefined);
     // limpa os dados em memória para não aparecerem na tela de login
@@ -34,6 +50,7 @@ export function Header({ onAbrirMenu }: { onAbrirMenu: () => void }) {
         <Menu className="size-6" />
       </button>
       <BuscaGlobal />
+      {telaGrande && <PlayerRadio />}
       <div className="ml-auto flex items-center gap-3">
         <Relogio />
         <Link to="/configuracoes" className="rounded-lg border border-borda bg-card p-2 text-suave hover:text-white" aria-label="Configurações">

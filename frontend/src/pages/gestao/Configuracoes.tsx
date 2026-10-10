@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { HardDriveDownload, KeyRound, Save, Smartphone } from 'lucide-react';
-import { api, ApiError, type Empresa } from '@/lib/api';
+import { HardDriveDownload, KeyRound, Pencil, Plus, Radio as IconeRadio, Save, Smartphone, Trash2, X } from 'lucide-react';
+import { api, ApiError, type Empresa, type Radio } from '@/lib/api';
+import { CHAVE_RADIOS } from '@/components/layout/PlayerRadio';
+import { Confirmar } from '@/components/ui/Confirmar';
 import { Card } from '@/components/ui/Card';
 import { Botao } from '@/components/ui/Botao';
 import { Campo, Input } from '@/components/ui/Campos';
@@ -88,6 +90,7 @@ export function Configuracoes() {
       </Card>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Radios />
         <AcessoCelular />
         <Backups />
         <TrocarSenha />
@@ -218,6 +221,162 @@ function TrocarSenha() {
         </Botao>
       </form>
       <p className="mt-2 text-xs text-apagado">Ao trocar, todos os outros aparelhos conectados saem e precisam da senha nova.</p>
+    </Card>
+  );
+}
+
+const radioVazia = { nome: '', descricao: '', url: '', tocarAoAbrir: false };
+
+function Radios() {
+  const qc = useQueryClient();
+  const avisar = useAviso();
+  const { data: radios = [] } = useQuery({ queryKey: CHAVE_RADIOS, queryFn: () => api<Radio[]>('/radios') });
+  const [form, setForm] = useState(radioVazia);
+  const [editando, setEditando] = useState<number | null>(null);
+  const [erros, setErros] = useState<Record<string, string>>({});
+  const [excluir, setExcluir] = useState<Radio | null>(null);
+
+  const limpar = () => {
+    setForm(radioVazia);
+    setEditando(null);
+    setErros({});
+  };
+  const atualizarLista = () => qc.invalidateQueries({ queryKey: CHAVE_RADIOS });
+
+  const salvar = useMutation({
+    mutationFn: () =>
+      api<Radio>(editando ? `/radios/${editando}` : '/radios', { method: editando ? 'PUT' : 'POST', body: JSON.stringify(form) }),
+    onSuccess: () => {
+      atualizarLista();
+      avisar(editando ? 'Rádio atualizada.' : 'Rádio adicionada. Ela já aparece no player do topo.');
+      limpar();
+    },
+    onError: (e) => {
+      if (e instanceof ApiError && e.campos) setErros(Object.fromEntries(e.campos.map((c) => [c.campo, c.mensagem])));
+      avisar(e.message, 'erro');
+    },
+  });
+
+  const marcarAoAbrir = useMutation({
+    mutationFn: (r: Radio) => api<Radio>(`/radios/${r.id}`, { method: 'PUT', body: JSON.stringify({ tocarAoAbrir: !r.tocarAoAbrir }) }),
+    onSuccess: atualizarLista,
+    onError: (e) => avisar(e.message, 'erro'),
+  });
+
+  const remover = useMutation({
+    mutationFn: (id: number) => api(`/radios/${id}`, { method: 'DELETE' }),
+    onSuccess: (_, id) => {
+      atualizarLista();
+      if (editando === id) limpar();
+      setExcluir(null);
+      avisar('Rádio removida.');
+    },
+    onError: (e) => avisar(e.message, 'erro'),
+  });
+
+  return (
+    <Card className="p-4 md:col-span-2">
+      <h2 className="mb-1 flex items-center gap-2 font-semibold text-white">
+        <IconeRadio className="size-4 text-laranja" /> Rádios
+      </h2>
+      <p className="mb-4 text-sm text-suave">
+        Aparecem no player do topo, ao lado da busca (só no computador). Use o link direto da transmissão ao vivo, não o endereço do site da rádio.
+      </p>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          salvar.mutate();
+        }}
+        className="grid grid-cols-1 gap-4 sm:grid-cols-6"
+      >
+        <Campo rotulo="Nome" erro={erros.nome} className="sm:col-span-2" htmlFor="radio-nome">
+          <Input id="radio-nome" value={form.nome} placeholder="Rádio ALX FM" onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+        </Campo>
+        <Campo rotulo="Descrição (opcional)" erro={erros.descricao} className="sm:col-span-4" htmlFor="radio-descricao">
+          <Input id="radio-descricao" value={form.descricao} placeholder="Rádio Rock FM" onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+        </Campo>
+        <Campo
+          rotulo="Link da transmissão ao vivo"
+          erro={erros.url}
+          ajuda="Costuma terminar em .mp3, .aac, /stream ou /live. Links .m3u8 e páginas de site não tocam."
+          className="sm:col-span-6"
+          htmlFor="radio-url"
+        >
+          <Input id="radio-url" value={form.url} placeholder="https://…" inputMode="url" onChange={(e) => setForm({ ...form, url: e.target.value })} />
+        </Campo>
+        <label className="flex items-center gap-2 text-sm text-texto sm:col-span-4">
+          <input type="checkbox" checked={form.tocarAoAbrir} onChange={(e) => setForm({ ...form, tocarAoAbrir: e.target.checked })} className="size-4 accent-orange-500" />
+          Tocar quando abrir o programa
+        </label>
+        <div className="flex justify-end gap-2 sm:col-span-2">
+          {editando && (
+            <Botao variante="secundario" icone={<X className="size-4" />} onClick={limpar}>
+              Cancelar
+            </Botao>
+          )}
+          <Botao type="submit" icone={editando ? <Save className="size-4" /> : <Plus className="size-4" />} carregando={salvar.isPending}>
+            {editando ? 'Salvar' : 'Adicionar'}
+          </Botao>
+        </div>
+      </form>
+
+      {radios.length > 0 && (
+        <ul className="mt-5 divide-y divide-borda border-t border-borda">
+          {radios.map((r) => (
+            <li key={r.id} className="flex flex-wrap items-center gap-3 py-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-white">
+                  {r.nome}
+                  {r.descricao && <span className="ml-2 font-normal text-laranja">{r.descricao}</span>}
+                </p>
+                <p className="truncate text-xs text-apagado" title={r.url}>
+                  {r.url}
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-xs text-suave">
+                <input
+                  type="checkbox"
+                  checked={r.tocarAoAbrir}
+                  disabled={marcarAoAbrir.isPending}
+                  onChange={() => marcarAoAbrir.mutate(r)}
+                  className="size-4 accent-orange-500"
+                />
+                Tocar ao abrir
+              </label>
+              <Botao
+                variante="fantasma"
+                tamanho="sm"
+                icone={<Pencil className="size-3.5" />}
+                onClick={() => {
+                  setEditando(r.id);
+                  setErros({});
+                  setForm({ nome: r.nome, descricao: r.descricao ?? '', url: r.url, tocarAoAbrir: r.tocarAoAbrir });
+                }}
+              >
+                Editar
+              </Botao>
+              <Botao variante="fantasma" tamanho="sm" icone={<Trash2 className="size-3.5" />} onClick={() => setExcluir(r)} aria-label={`Excluir ${r.nome}`}>
+                Excluir
+              </Botao>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3 text-xs text-apagado">
+        Só uma rádio toca ao abrir. Se o navegador bloquear o som na abertura, a rádio começa no primeiro clique ou tecla.
+      </p>
+
+      <Confirmar
+        aberto={excluir !== null}
+        titulo="Excluir rádio"
+        mensagem={`Remover “${excluir?.nome ?? ''}” do player?`}
+        textoConfirmar="Excluir"
+        perigo
+        carregando={remover.isPending}
+        onConfirmar={() => excluir && remover.mutate(excluir.id)}
+        onCancelar={() => setExcluir(null)}
+      />
     </Card>
   );
 }
