@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { dataLocal, listQuery, parcial, somenteDigitos, textoOpcional } from './common.js';
 import { centavos } from './itens.js';
+import { chavePixValida, normalizarChavePix } from '../lib/pix.js';
 
 const idOpcional = z.number().int().positive().nullish();
 const imagemId = z.string().regex(/^[a-f0-9]{32}$/, 'Imagem inválida');
@@ -136,6 +137,11 @@ export const empresaUpdate = z.object({
   cidade: textoOpcional,
   uf: textoOpcional.transform((v) => v?.toUpperCase()),
   urlEmissorNfe: textoOpcional.refine((v) => v == null || /^https?:\/\//.test(v), 'Informe um link começando com http:// ou https://'),
+  pixChave: textoOpcional
+    .refine((v) => v == null || chavePixValida(v), 'Chave Pix inválida. Use CPF, CNPJ, e-mail, celular com +55 ou chave aleatória')
+    .transform((v) => (v == null ? v : normalizarChavePix(v))),
+  pixNome: textoOpcional,
+  pixCidade: textoOpcional,
 });
 
 export type VeiculoCreate = z.infer<typeof veiculoCreate>;

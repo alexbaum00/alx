@@ -56,6 +56,7 @@ Diferenças em relação à imagem: "Clientes" e "Serviços" saem do primeiro n�
 | Relatórios: faturamento por dia, ranking de peças e serviços | `GET /api/relatorios/vendas` | ✅ |
 | Configurações: dados da oficina e link da NF-e | `/api/empresa` | ✅ |
 | Configurações ▸ Rádios e player do topo | `/api/radios` | ✅ |
+| Venda: QR code Pix com o valor (BR Code estático, sem banco) | `GET /api/vendas/:id/pix` | ✅ |
 | Busca do topo | clientes, veículos e peças | ✅ |
 
 ### Nota fiscal (MEI)

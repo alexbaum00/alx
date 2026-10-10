@@ -140,6 +140,27 @@ describe('vendas', () => {
   });
 });
 
+describe('Pix da venda', () => {
+  it('pede a chave antes e depois gera o QR com o valor da venda', async () => {
+    await prisma.empresa.deleteMany();
+    const venda = (await post('/api/vendas', { itens: [{ tipo: 'SERVICO', descricao: 'Instalação', valorUnitarioCentavos: 15050 }] })).json();
+    const semChave = await app.inject({ method: 'GET', url: `/api/vendas/${venda.id}/pix` });
+    expect(semChave.statusCode).toBe(400);
+
+    const ruim = await app.inject({ method: 'PUT', url: '/api/empresa', payload: { pixChave: 'qualquer coisa' } });
+    expect(ruim.statusCode).toBe(400);
+    const ok = await app.inject({ method: 'PUT', url: '/api/empresa', payload: { pixChave: '+55 (11) 99999-8888', pixNome: 'Alex', pixCidade: 'São Paulo' } });
+    expect(ok.json().pixChave).toBe('+5511999998888');
+
+    const pix = (await app.inject({ method: 'GET', url: `/api/vendas/${venda.id}/pix` })).json();
+    expect(pix.payload).toContain('0114+5511999998888');
+    expect(pix.payload).toContain('5406150.50');
+    expect(pix.payload).toContain(`VENDA${venda.id}`);
+    expect(pix.qrSvg).toContain('<svg');
+    await prisma.empresa.deleteMany();
+  });
+});
+
 describe('orçamentos (módulo separado)', () => {
   it('pode ser feito para contato sem cadastro, não mexe no estoque e não conta como venda', async () => {
     const res = await post('/api/orcamentos', {

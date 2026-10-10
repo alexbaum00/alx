@@ -15,6 +15,7 @@ import { useAviso } from '@/components/ui/Toast';
 import { DadosCliente, ItensDocumento } from '@/components/vendas/Documento';
 import { FormasPagamento } from '@/components/vendas/FormasPagamento';
 import { PainelNota } from '@/components/vendas/PainelNota';
+import { CartaoPix, QrPix } from '@/components/vendas/PixVenda';
 import { linkWhatsApp } from '@/pages/cadastros/configs';
 
 export function DetalheVenda() {
@@ -128,7 +129,10 @@ export function DetalheVenda() {
             )}
           </div>
         </div>
-        <div className="lg:col-span-2">{ativa && <PainelNota venda={venda} empresa={empresa} />}</div>
+        <div className="space-y-4 lg:col-span-2">
+          {editavel && venda.valorTotalCentavos > 0 && <CartaoPix vendaId={venda.id} valorCentavos={venda.valorTotalCentavos} />}
+          {ativa && <PainelNota venda={venda} empresa={empresa} />}
+        </div>
       </div>
 
       <Modal
@@ -151,6 +155,12 @@ export function DetalheVenda() {
           {venda.status === 'ABERTO' ? 'As peças saem do estoque ao confirmar.' : 'Escolha como o cliente pagou.'}
         </p>
         <FormasPagamento valor={forma} onChange={setForma} />
+        {forma === 'PIX' && venda.valorTotalCentavos > 0 && (
+          <div className="mt-4 border-t border-borda pt-4">
+            <QrPix vendaId={venda.id} valorCentavos={venda.valorTotalCentavos} />
+            <p className="mt-3 text-center text-xs text-apagado">Confira o Pix no app do banco antes de confirmar.</p>
+          </div>
+        )}
       </Modal>
 
       <Confirmar
