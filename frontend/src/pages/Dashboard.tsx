@@ -59,10 +59,10 @@ export function Dashboard() {
 function Metrica({ icone: Icone, cor, titulo, valor, detalhe, para }: { icone: LucideIcon; cor: string; titulo: string; valor: string; detalhe: string; para?: string }) {
   const conteudo = (
     <Card className="h-full p-4 transition-colors hover:bg-card-hover">
-      <span className={`mb-3 inline-flex size-10 items-center justify-center rounded-lg ${cor}`}>
+      <span className={`mb-3 inline-flex size-11 items-center justify-center rounded-xl shadow-lg shadow-black/30 ${cor}`}>
         <Icone className="size-5 text-white" />
       </span>
-      <p className="text-sm text-slate-300">{titulo}</p>
+      <p className="text-sm text-slate-200 sm:text-[15px]">{titulo}</p>
       <p className="mt-1 text-xl font-bold text-white sm:text-2xl">{valor}</p>
       <p className="mt-1 text-xs text-apagado">{detalhe}</p>
     </Card>
@@ -172,8 +172,8 @@ function Atalhos() {
           <Link
             key={para}
             to={para}
-            className={`flex aspect-square flex-col items-center justify-center gap-1.5 rounded-lg border p-1 text-center transition-colors ${
-              destaque ? 'border-laranja bg-laranja-escuro text-white hover:bg-laranja' : 'border-borda bg-slate-800/40 text-slate-200 hover:border-slate-600 hover:bg-card-hover'
+            className={`flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border p-1 text-center transition-colors ${
+              destaque ? 'border-laranja/60 bg-laranja-escuro text-white shadow-lg shadow-orange-950/40 hover:bg-laranja' : 'border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10'
             }`}
           >
             <Icone className="size-5 sm:size-6" />

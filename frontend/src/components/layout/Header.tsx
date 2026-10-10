@@ -29,7 +29,7 @@ export function Header({ onAbrirMenu }: { onAbrirMenu: () => void }) {
     qc.setQueryData<EstadoAcesso>(CHAVE_ACESSO, (e) => (e ? { ...e, autenticado: false } : e));
   };
   return (
-    <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-borda bg-fundo/90 px-4 py-3 backdrop-blur lg:px-6">
+    <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-white/10 bg-slate-950/20 px-4 py-3 backdrop-blur-xl lg:px-6">
       <button onClick={onAbrirMenu} className="rounded-lg p-2 text-suave hover:bg-card-hover lg:hidden" aria-label="Abrir menu">
         <Menu className="size-6" />
       </button>

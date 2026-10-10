@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`min-w-0 rounded-xl border border-borda bg-card ${className}`}>{children}</section>;
+  return <section className={`min-w-0 rounded-2xl border border-borda bg-card shadow-lg shadow-black/20 ${className}`}>{children}</section>;
 }
 
 export function CardHeader({ titulo, link }: { titulo: string; link?: { para: string; texto: string } }) {

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff, Lock, LockOpen, Monitor } from 'lucide-react';
 import { api, EVENTO_SESSAO_EXPIRADA, type EstadoAcesso } from '@/lib/api';
 import { Logo } from '@/components/layout/Logo';
+import { FundoDesfocado } from '@/components/layout/Fundo';
 import { Botao } from '@/components/ui/Botao';
 import { Campo, Input } from '@/components/ui/Campos';
 import { Carregando, Erro } from '@/components/ui/Estados';
@@ -36,15 +37,8 @@ export function PortaoAcesso({ children }: { children: ReactNode }) {
 // Fundo escuro desfocado, cartão de vidro e o logo redondo "encaixado" no topo do cartão.
 function Moldura({ titulo, subtitulo, children }: { titulo: string; subtitulo: string; children: ReactNode }) {
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#0a1020] px-4 py-10">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 blur-3xl">
-        <div className="absolute -top-1/4 left-[5%] size-[60vmax] rounded-full bg-[#2a4a63]/45" />
-        <div className="absolute top-[30%] -left-[15%] size-[45vmax] rounded-full bg-[#3b4652]/45" />
-        <div className="absolute -top-[10%] -right-[10%] size-[50vmax] rounded-full bg-[#4a5866]/40" />
-        <div className="absolute -right-[5%] -bottom-1/4 size-[50vmax] rounded-full bg-[#3f4248]/45" />
-        <div className="absolute -bottom-1/3 left-1/4 size-[45vmax] rounded-full bg-[#060a1a]/80" />
-        <div className="absolute top-[35%] left-[35%] size-[30vmax] rounded-full bg-[#0b1226]/70" />
-      </div>
+    <div className="relative isolate flex min-h-dvh items-center justify-center px-4 py-10">
+      <FundoDesfocado />
 
       <div className="relative mt-20 w-full max-w-md">
         <div className="absolute -top-20 left-1/2 z-10 -translate-x-1/2 rounded-full shadow-[0_0_28px_rgba(249,115,22,0.3),0_10px_30px_rgba(0,0,0,0.6)]">
